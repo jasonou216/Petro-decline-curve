@@ -6,3 +6,5 @@ plotly>=5.22
 streamlit>=1.36
 requests>=2.32
 pytest>=8.2
+pyyaml>=6.0
+python-dotenv>=1.0

@@ -1,0 +1,33 @@
+# Economic assumptions for Phase 5 NPV/IRR modeling (see src/petro_decline/economics.py).
+#
+# WTI price is NOT set here — it's fetched live from the EIA API at run time
+# (economics.fetch_wti_price, requires the EIA_API_KEY environment variable).
+# wti_price_fallback below is only used if that call fails or the key isn't set.
+#
+# Every value carries a source and last_updated so it's clear which numbers
+# are live, which are dated illustrative assumptions, and when to revisit them.
+
+wti_price_fallback:
+  value: 70.0
+  source: "fallback default, used only if the EIA API call fails or EIA_API_KEY is unset"
+  last_updated: "2026-08-24"
+
+wcs_differential:
+  value: 17.0
+  source: "typical range midpoint per industry commentary"
+  last_updated: "2026-08-24"
+
+discount_rate:
+  value: 0.10
+  source: "standard O&G project evaluation convention"
+  last_updated: "2026-08-24"
+
+opex_per_bbl:
+  value: 13.0
+  source: "illustrative CSS thermal assumption, not verified operator data"
+  last_updated: "2026-08-24"
+
+steam_cost_per_cycle:
+  value: 200000.0
+  source: "illustrative, steam volume data not available in this dataset"
+  last_updated: "2026-08-24"
