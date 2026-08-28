@@ -778,7 +778,8 @@ def render_degradation_chart(battery: str, well_econ: pd.DataFrame, battery_medi
     st.plotly_chart(fig, width="stretch")
     st.caption(
         "Bars: this well's own value per cycle, in order. Dashed line: the battery median at each "
-        "cycle position (see Glossary: Battery median)."
+        "cycle position (see Glossary: Battery median). Cycle positions here count only "
+        "high-confidence cycles, so they may not match the cycle numbers in the production chart above."
     )
 
 
