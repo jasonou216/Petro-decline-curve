@@ -6,15 +6,6 @@ built the way it is.
 
 ## Context
 
-Portfolio project for internship applications, built while a 2nd-year Chemical
-Engineering student (Petroleum minor). I know Python and have some process-engineering
-(HYSYS) background but I'm not a professional developer, so the priority throughout
-was clear, readable code over clever code, and being able to explain every part of it
-in an interview: type hints and docstrings everywhere, small testable functions, and
-comments that explain *why* a non-obvious choice was made (a particular Arps form, a
-numerical stability trick in curve fitting, a discounting convention) instead of
-leaving the reasoning implicit.
-
 The project pulls Alberta well production data from Petrinex, detects individual
 production cycles per well, fits Arps decline curves to each cycle, calculates EUR,
 layers on NPV/IRR economics, and presents it all in a Streamlit dashboard, for two
