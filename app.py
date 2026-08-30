@@ -259,6 +259,34 @@ def inject_css() -> None:
     )
 
 
+def compact_currency(value: float) -> str:
+    """Compact dollar formatting ($1.03B, $546.5M, $12.3k) for narrow metric
+    cards, where st.metric's native value display clips long full-precision
+    strings with an ellipsis rather than wrapping. Full precision is still
+    what's in the underlying CSVs and the README, this is display-only.
+    """
+    sign = "-" if value < 0 else ""
+    abs_v = abs(value)
+    if abs_v >= 1e9:
+        return f"{sign}${abs_v / 1e9:.2f}B"
+    if abs_v >= 1e6:
+        return f"{sign}${abs_v / 1e6:.1f}M"
+    if abs_v >= 1e3:
+        return f"{sign}${abs_v / 1e3:.0f}k"
+    return f"{sign}${abs_v:,.0f}"
+
+
+def compact_volume(value: float, unit: str = "m3") -> str:
+    """Compact volume formatting (4.08M m3, 546k m3) — same reasoning as
+    compact_currency."""
+    abs_v = abs(value)
+    if abs_v >= 1e6:
+        return f"{abs_v / 1e6:.2f}M {unit}"
+    if abs_v >= 1e3:
+        return f"{abs_v / 1e3:.0f}k {unit}"
+    return f"{abs_v:,.0f} {unit}"
+
+
 def metric_tile(
     label: str,
     value: str,
@@ -526,8 +554,8 @@ def render_battery_card(battery: str) -> None:
         )
         metric_tile(
             "Total EUR (high-confidence cycles)",
-            f"{stats['total_eur']:,.0f} m3",
-            help_text=glossary_help("EUR"),
+            compact_volume(stats["total_eur"]),
+            help_text=glossary_help("EUR") + f" Exact: {stats['total_eur']:,.0f} m3.",
             accent_color=ACCENT_SAGE,
             key=f"{slug}_eur",
         )
@@ -535,8 +563,8 @@ def render_battery_card(battery: str) -> None:
         npv_color = COLOR_CRITICAL if stats["total_npv"] < 0 else STARTUP_RAMP_COLOR
         metric_tile(
             "Total NPV (high-confidence cycles)",
-            f"${stats['total_npv']:,.0f}",
-            help_text=glossary_help("NPV"),
+            compact_currency(stats["total_npv"]),
+            help_text=glossary_help("NPV") + f" Exact: ${stats['total_npv']:,.0f}.",
             accent_color=npv_color,
             key=f"{slug}_totalnpv",
         )

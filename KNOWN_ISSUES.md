@@ -24,6 +24,7 @@ A candid record of technical reviews of this project: what got fixed, and what's
 | 28 | `well_oil_series` filtered `ProductID == "OIL"` only; `identify_injectors` screens `{"OIL","BIT"}` | `well_oil_series` now sums the same set. Zero BIT rows in either battery, confirmed no-op (`git diff` on regenerated `cycles_full.csv` is empty) |
 | 29 | Flagship "recovery drops cycle-over-cycle" finding and the "cycle 1 isn't always real" caveat sat in separate bullets, never connected | Addressed head-on in the same bullet |
 | 30 | No `LICENSE`; "How to run" only showed Windows activation | Added MIT `LICENSE`; added the Mac/Linux command |
+| 33 | Battery-overview EUR/NPV metric cards clip with an ellipsis at typical widths (`$1,029,…`, `4,083,0…`), confirmed live, not just from reading the code | Added `compact_currency`/`compact_volume` ($1.03B, 4.08M m3); full precision moved into the hover tooltip |
 
 All fixes to `decline.py`/`eur.py` changed real fitted results, so the full pipeline was re-run at full scale afterward, every number in the README and every screenshot reflects the corrected run.
 
@@ -45,7 +46,6 @@ All fixes to `decline.py`/`eur.py` changed real fitted results, so the full pipe
 | 23 | R2 >= 0.5 threshold isn't validated; 67.3% of NPV survives at R2 >= 0.7 | README > Limitations |
 | 31 | 10% discount rate is nominal, applied to flat/non-escalating cash flows, understates true NPV | README > Limitations |
 | 32 | Steam cost charged same month as peak production (t=0), no lag for the real steam-soak period | README > Limitations |
-| 33 | Dashboard metric cards may clip at narrow (tablet/laptop) widths; `st.metric` has no overflow handling | not pixel-verified live, code has no width/wrap handling either way |
 | 34 | Petrinex's redistribution terms for the committed filtered CSVs weren't confirmed | unresolved, needs a manual check of Petrinex/AER's actual terms of use |
 
 ---
