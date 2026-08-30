@@ -15,41 +15,44 @@ Two reasons that's the right scope for now, not a shortcut:
      assumption this phase has no basis for, while still giving a EUR that's
      directly comparable across cycles of different lengths — which is
      exactly what a cycle-degradation comparison needs.
+
+This used to be a continuous closed-form integral, integral_0^T q(t) dt. It
+isn't anymore: `economics.cycle_cash_flows` builds monthly revenue from
+`decline.predict(t)` evaluated at the discrete grid t = 0, 1, ..., T-1 (one
+predicted rate per production month, which is how the volume is actually
+reported and priced), and a continuous integral over the same window doesn't
+equal that discrete sum — for any declining curve, summing the rate at the
+start of each month overstates the true area under the curve for that month,
+so the two numbers diverged by a few percent depending on how steep the
+cycle was. Computing EUR as the same discrete sum `cycle_cash_flows` already
+uses removes the mismatch entirely: EUR and the volume implied by NPV are
+now built from the identical numbers, not two different approximations of
+the same thing.
 """
 
 from __future__ import annotations
 
 import numpy as np
 
-from petro_decline.decline import ArpsModel
-
-_B_NEAR_ONE = 1e-6  # within this of b=1, use the harmonic formula to avoid a 1/(1-b) blowup
+from petro_decline.decline import predict
 
 
 def cycle_eur(model: str, qi: float, di: float, b: float, duration_months: float) -> float:
-    """Cumulative production from a fitted Arps curve, integrated over its cycle's duration.
+    """Cumulative production from a fitted Arps curve, summed over its cycle's
+    monthly time grid, t = 0, 1, ..., duration_months - 1 — the same grid
+    `economics.cycle_cash_flows` uses to build monthly revenue.
 
     Args:
         model: 'exponential', 'harmonic', or 'hyperbolic'.
         qi: initial rate at the cycle's peak.
         di: nominal initial decline rate (per month).
         b: hyperbolic exponent (ignored for exponential/harmonic).
-        duration_months: months to integrate over (the cycle's own duration).
+        duration_months: number of months in the cycle (the cycle's own
+            observed duration).
 
     Returns:
-        Cumulative volume over [0, duration_months], same units as qi (e.g.
-        m3/month) times a month.
+        Cumulative volume over the cycle, same units as qi (e.g. m3/month)
+        times a month.
     """
-    arps_model = ArpsModel(model)
-    t = duration_months
-
-    if di == 0:
-        return qi * t
-
-    if arps_model is ArpsModel.EXPONENTIAL:
-        return qi / di * (1 - np.exp(-di * t))
-
-    if arps_model is ArpsModel.HARMONIC or abs(b - 1.0) < _B_NEAR_ONE:
-        return qi / di * np.log(1 + di * t)
-
-    return qi / (di * (b - 1)) * ((1 + b * di * t) ** (1 - 1 / b) - 1)
+    t = np.arange(int(duration_months), dtype=float)
+    return float(np.sum(predict(t, model, qi, di, b)))

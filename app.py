@@ -116,9 +116,10 @@ GLOSSARY = {
         "$$q(t) = q_i\\, e^{-D_i t}$$",
     },
     "Harmonic": {
-        "short": "Decline that flattens out the most over time.",
-        "full": "Arps decline with b = 1, the slowest-dropping of the three shapes: it declines very "
-        "slowly and flattens out more than either other shape.\n\n"
+        "short": "Decline that flattens out slowly over time (though not always the slowest of all fits).",
+        "full": "Arps decline with b = 1: it declines more slowly than exponential (b = 0), and slower "
+        "than most hyperbolic fits too, though a hyperbolic fit with b > 1 can flatten out even more "
+        "than harmonic.\n\n"
         "$$q(t) = \\dfrac{q_i}{1 + D_i t}$$",
     },
     "Hyperbolic": {
@@ -865,7 +866,14 @@ def render_economics_whatif_panel(battery: str, well_id: str) -> None:
             "model": whatif["model"],
             "EUR": whatif["EUR"].map(lambda v: f"{v:,.0f}" if pd.notna(v) else "(n/a)"),
             "NPV (what if)": whatif["NPV"].map(lambda v: f"${v:,.0f}" if pd.notna(v) else "(n/a)"),
-            "IRR (what if)": whatif["IRR"].map(lambda v: f"{v * 100:.0f}%" if pd.notna(v) else "(n/a)"),
+            # IRR is a root-finding solution over a handful of sparse monthly cash
+            # flows, not a bounded metric — a cycle with a tiny or front-loaded cost
+            # basis can solve to a technically-correct but meaningless four- or
+            # five-digit percentage. Past 500% it's not telling you anything IRR is
+            # meant to convey, so it's shown as a flag rather than a fake-precise number.
+            "IRR (what if)": whatif["IRR"].map(
+                lambda v: "(n/a)" if pd.isna(v) else (">500%, not meaningful" if v > 5.0 else f"{v * 100:.0f}%")
+            ),
         }
     )
     st.dataframe(

@@ -11,8 +11,9 @@ EUR number. NPV/IRR/payback all fundamentally depend on the *timing* of
 cash flows, not just the total volume recovered — a lump-sum EUR alone
 can't produce a meaningful IRR or payback period at all, since both need to
 know how quickly (or slowly) the volume actually arrives. The monthly
-series still integrates to the same EUR `petro_decline.eur.cycle_eur`
-already computed for Phase 4.
+series here uses the exact same discrete grid `petro_decline.eur.cycle_eur`
+sums over, so the volume behind a cycle's NPV and its reported EUR are now
+the same number, not two separate approximations of it.
 
 Every price/cost/rate input is an `Assumption` (value + source +
 last_updated), not a bare number — nothing here is a hardcoded magic

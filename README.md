@@ -30,39 +30,40 @@ That ruled out the usual approaches, confirmed by actually looking at the data b
 
 ## Batteries analyzed
 
-| Battery | Operator | Wells analyzed | High-confidence cycles | Avg. cycles/well | Total EUR (m3) | Total NPV | Wells w/ negative NPV | Cycles w/ negative NPV |
+| Battery | Operator | Wells analyzed | High-confidence cycles | Avg. HC cycles/well | Modelled EUR (m3) | Modelled NPV | Wells w/ negative NPV | Cycles w/ negative NPV |
 |---|---|---|---|---|---|---|---|---|
-| Mahihkan Battery 02-21 | Imperial Oil | 1,457 | 1,398 | 0.96 | 3,512,331 | $1,004,184,068 | 19.2% (of 924) | 24.3% |
-| Nabiye 11-23 | Imperial Oil | 281 | 477 | 1.70 | 1,711,529 | $544,001,164 | 13.6% (of 243) | 18.2% |
+| Mahihkan Battery 02-21 | Imperial Oil | 1,457 | 1,485 | 1.02 | 4,083,003 | $1,029,957,347 | 18.2% (of 946) | 23.1% |
+| Nabiye 11-23 | Imperial Oil | 281 | 493 | 1.75 | 1,966,050 | $546,457,764 | 11.9% (of 244) | 17.2% |
 
-Combined: 71.2% of all fitted cycles are low confidence, 22.8% of high-confidence cycles carry negative NPV, and total NPV across both batteries is $1,548,185,232 (mean cycle NPV $826k, median $307k, one well alone accounting for $42.1M). EUR and production volumes are in m3, the unit Petrinex reports in.
+Combined: 69.6% of all fitted cycles are low confidence, 21.6% of high-confidence cycles carry negative NPV, and modelled NPV across both batteries is $1,576,415,111 (mean cycle NPV $797k, median $315k, one well alone accounting for $40.2M). "Modelled NPV" is the sum of the observed 2022-2026 cycles under this project's cost assumptions, it's not an asset valuation or a reserves estimate. EUR and production volumes are in m3, the unit Petrinex reports in. "Avg. HC cycles/well" is out of *every* well analyzed, including the majority that have zero or one high-confidence cycle in this window, not just wells with several, see Limitations.
 
 ## Theory
 
-Arps decline: `q(t) = qi / (1 + b * Di * t)^(1/b)`, fit per cycle in three forms (exponential b=0, harmonic b=1, hyperbolic general form). The winner is chosen **by AIC, not R2**: hyperbolic's extra free parameter almost always improves raw R2 whether or not it's earning its keep, and AIC penalizes that.
+Arps decline: `q(t) = qi / (1 + b * Di * t)^(1/b)`, fit per cycle in three forms (exponential b=0, harmonic b=1, hyperbolic general form) on the cycle's actual producing months only, shut-in/soak gaps within a cycle are dropped before fitting rather than treated as zero-rate observations. The winner is chosen **by AICc, not R2**: hyperbolic's extra free parameter almost always improves raw R2 whether or not it's earning its keep, and AICc, the small-sample-corrected form of AIC, penalizes that properly even when a cycle only has a handful of points (plain AIC is itself biased in that regime). Each form is only attempted with at least 2 residual degrees of freedom.
 
-EUR, per cycle: `EUR = integral from 0 to T of q(t) dt`, where T is the cycle's own observed duration in months, not an economic limit (the pipeline doesn't invent a cost/price cutoff to integrate to).
+Per-cycle recovery, called "EUR" throughout the dashboard: `EUR = sum over t=0..T-1 of q(t)`, where T is the cycle's own observed duration in months, not an economic limit. It's really cumulative production over the cycle's observed window, for a non-final cycle that's close to the well's actual produced volume rather than a forward-looking estimate. It's summed on the same monthly grid as NPV below, not integrated continuously, so the two numbers are built from the same volume rather than two different approximations of it.
 
-NPV, per cycle: `NPV = sum over t of [ q_t * (price - opex) / (1 + r)^t ] - steam_cost`. Price is the WCS netback (WTI minus a differential), pulled live from the EIA public API with a documented fallback in `config.yaml`.
+NPV, per cycle: `NPV = sum over t of [ q_t * (price - opex) / (1 + r)^t ] - steam_cost`. Price is the WCS netback (WTI minus a differential), pulled live from the EIA public API with a documented fallback in `config.yaml`. `q_t` is the same monthly value EUR sums.
 
 ## Methodology notes
 
 - **Cycle detection**: peak detection on monthly oil, with relative/local prominence (a peak must clear its own preceding trough by a threshold, not the well's all-time max), a minimum 4-month spacing between cycles, and a minimum-volume filter to drop wells too small to have a meaningful signal. A well's first rise from zero is tagged as startup, not a cycle. The 40% prominence threshold was checked, not assumed: 25 random borderline (30-40%) candidates were judged by eye, and about 60% turned out to be noise, which confirmed the cutoff.
-- **Confidence flagging**: a fit is low confidence if the cycle is too short, R2 is poor, or a parameter hits its bound. Most of the 71.2% low-confidence rate comes from real production being non-monotonic within a cycle (a rise, a dip, another bump) while Arps curves are strictly monotonic. Low-confidence cycles stay in the dataset and are shown in the dashboard, but are excluded from EUR and NPV totals.
+- **Confidence flagging**: a fit is low confidence if the cycle is too short, R2 is poor, a parameter hits its bound, or there weren't enough producing months to support the model it picked. Most of the 69.6% low-confidence rate comes from real production being non-monotonic within a cycle (a rise, a dip, another bump) while Arps curves are strictly monotonic. Low-confidence cycles stay in the dataset and are shown in the dashboard, but are excluded from EUR and NPV totals.
 
 ## Key findings
 
-- qi (peak rate) declines cycle-over-cycle in about 70% of wells, EUR in about 58%, checked both within-well and cross-sectionally.
-- Negative-NPV share rises with cycle position (19.1% at cycle 1 up to 25.6% at cycle 3+), consistent with the degradation trend.
-- Aggregate totals are skewed by a small number of standout wells; the top well was cross-checked directly against the raw Petrinex file to confirm it's real, not a fitting artifact.
+- qi (peak rate) declines cycle-over-cycle in about 70% of wells, per-cycle recovery in about 60%, checked both within-well (across the 609 wells with at least a 1st and 2nd high-confidence cycle) and cross-sectionally.
+- Negative-NPV share rises with cycle position (17.5% at cycle 1 up to 25.2% at cycle 3+), consistent with the degradation trend. That said, this is a largely mechanical result: steam cost is a flat $200k per cycle regardless of well size, so at current prices "negative NPV" is close to "this cycle produced under ~3,700 bbl", later cycles produce less, so more of them fall under that line. Worth stating plainly so it doesn't read as a richer finding than it is.
+- Modelled totals are skewed by a small number of standout wells, not evenly distributed across the ~1,190 wells with a usable fit; the top well was cross-checked directly against the raw Petrinex file to confirm it's real, not a fitting artifact.
 
 ## Limitations
 
-- Petrinex's public API only goes back to 2022, so the 54-month window is a fraction of these wells' actual production history (Cold Lake has produced since the 1980s-90s, per public industry history, not this project's own data).
-- Opex and steam cost are illustrative assumptions in `config.yaml`, not verified operator figures.
+- Petrinex's monthly Files API (what this pipeline pulls from) only serves 2022 onward, so the 54-month window is a fraction of these wells' actual production history, Cold Lake has produced since the 1980s-90s. AER's own catalogue lists conventional volumetric data back to 2002 through a separate bulk/self-service channel, but only the most recent 4 years are free self-serve, older periods go through a compilation/purchase request this project hasn't pursued. With 0.96-1.75 high-confidence cycles per well on average, most wells here show one partial cycle, not a real multi-decade stack, so the degradation finding rests on a minority of wells that happen to show 2+ cycles in this window rather than deep per-well history.
+- Revenue is priced as raw bitumen volume at the WCS blended price with only a flat differential. WCS is a diluted-bitumen blend (roughly 25-30% condensate); a real bitumen netback nets out diluent cost separately. This project doesn't model that, so netback (and everything downstream of it) is optimistic to some degree, on top of opex and steam cost already being illustrative, not verified operator figures.
 - The two batteries covered are a hardcoded constant (`TARGET_BATTERIES` in `data.py`), not a runtime parameter. Extending to another battery means editing that dict.
 - Built for CSS thermal assets specifically; the cyclic assumption would not hold for conventional or SAGD wells without adaptation.
 - IRR can return extreme, not-economically-meaningful values (thousands of percent) for cycles with a very small or front-loaded cost basis relative to revenue, since it's a root-finding solution over sparse monthly cash flows, not a bounded metric. NPV is the more reliable number in this dashboard; IRR is shown alongside it, not in place of it.
+- Production is treated as the instantaneous monthly rate at each month's index, standard for a quick DCA pass but not a mid-month convention. Curve fitting is also unweighted, so the high-rate early months of a cycle dominate every fit more than the (economically important) tail does.
 
 ## Files
 

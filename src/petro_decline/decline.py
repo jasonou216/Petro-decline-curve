@@ -66,7 +66,13 @@ from scipy.optimize import curve_fit
 # exponential model already covers that limiting case as its own fit.
 B_BOUNDS = (1e-6, 2.0)
 
-MIN_POINTS_TO_FIT = 3  # fewer points can't meaningfully constrain even a 2-parameter model
+# Minimum points required to attempt a model = its parameter count (k) + 2,
+# i.e. at least 2 residual degrees of freedom. This isn't just "enough to
+# solve the equations" (k points does that with zero residual DOF): with
+# n == k, curve_fit can pass through every point exactly, RSS collapses to
+# ~0, and AIC — even AICc — can't tell a genuine fit from an
+# over-parameterized one with nothing left to check it against. Requiring
+# n >= k + 2 also keeps AICc's correction term (below) always defined.
 
 # Thresholds for flagging a fit low_confidence — starting guesses for human
 # review, not validated cutoffs. MAX_PLAUSIBLE_DI: a nominal monthly decline
@@ -124,11 +130,18 @@ def _initial_guess(t: np.ndarray, q: np.ndarray) -> tuple[float, float]:
 def _fit_single_model(t: np.ndarray, q: np.ndarray, model: ArpsModel) -> dict | None:
     """Fit one Arps form to (t, q) via nonlinear least squares.
 
-    Returns None if curve_fit can't converge — callers should treat that as
-    "this form doesn't work for this cycle" rather than a hard error, since
-    trying all three forms and keeping the survivors is the whole point.
+    Returns None if there aren't enough points for this model's parameter
+    count (n < k + 2) or curve_fit can't converge — callers should treat
+    either as "this form doesn't work for this cycle" rather than a hard
+    error, since trying all three forms and keeping the survivors is the
+    whole point.
     """
     func = _ARPS_FUNCTIONS[model]
+    k = 3 if model is ArpsModel.HYPERBOLIC else 2
+    n = len(t)
+    if n < k + 2:
+        return None
+
     qi0, di0 = _initial_guess(t, q)
 
     if model is ArpsModel.HYPERBOLIC:
@@ -148,12 +161,17 @@ def _fit_single_model(t: np.ndarray, q: np.ndarray, model: ArpsModel) -> dict | 
     tss = float(np.sum((q - q.mean()) ** 2))
     r_squared = 1.0 if rss == 0 else (1 - rss / tss if tss > 0 else 0.0)
 
-    n, k = len(t), len(params)
     aic = n * np.log(max(rss, 1e-9) / n) + 2 * k  # rss floored to avoid log(0) on a perfect fit
+    # Small-sample correction (AICc): plain AIC is badly biased when n is close
+    # to k, exactly the regime a short cycle puts hyperbolic's 3 parameters in
+    # — with few points, an extra parameter can drive RSS near zero without
+    # actually being justified, and uncorrected AIC rewards that. The n >= k+2
+    # gate above guarantees n - k - 1 >= 1, so this correction is always defined.
+    aicc = aic + (2 * k * (k + 1)) / (n - k - 1)
 
     qi, di = float(params[0]), float(params[1])
     b = float(params[2]) if model is ArpsModel.HYPERBOLIC else (1.0 if model is ArpsModel.HARMONIC else 0.0)
-    return {"model": model, "qi": qi, "Di": di, "b": b, "r_squared": r_squared, "aic": aic}
+    return {"model": model, "qi": qi, "Di": di, "b": b, "r_squared": r_squared, "aic": aicc}
 
 
 # --- Per-cycle fitting ----------------------------------------------------
@@ -163,12 +181,18 @@ def fit_cycle(t: np.ndarray, q: np.ndarray, short_cycle: bool) -> dict:
     """Fit exponential, hyperbolic, and harmonic Arps to one cycle's post-peak
     segment and return the best (lowest-AIC) fit, with a low_confidence flag.
 
-    AIC, not raw R², picks the winner: hyperbolic has an extra free parameter
+    AICc, not raw R², picks the winner: hyperbolic has an extra free parameter
     (b) and will almost always match or beat the nested exponential/harmonic
     fits on R² alone, so selecting by R² would systematically favor it
     regardless of whether the extra parameter is actually earning its keep.
-    AIC penalizes that. R² is still returned for the winning model, since
-    it's the more intuitive "how good is this fit" number for review.
+    AICc penalizes that — the small-sample-corrected version of AIC, not
+    plain AIC, because plain AIC is itself biased toward extra parameters
+    when the point count is close to the parameter count (exactly the
+    regime a short cycle puts hyperbolic's 3 parameters in). Each model is
+    only attempted with at least 2 residual degrees of freedom (n >= k + 2),
+    so a 3-point cycle can no longer "fit" a 3-parameter curve with nothing
+    left to check it against. R² is still returned for the winning model,
+    since it's the more intuitive "how good is this fit" number for review.
 
     Args:
         t: months since the cycle's peak (0, 1, 2, ...).
@@ -184,14 +208,16 @@ def fit_cycle(t: np.ndarray, q: np.ndarray, short_cycle: bool) -> dict:
         semicolon-separated list of the specific reasons, empty if none).
     """
     fits = []
-    if len(q) >= MIN_POINTS_TO_FIT:
-        for model in ArpsModel:
-            fit = _fit_single_model(t, q, model)
-            if fit is not None:
-                fits.append(fit)
+    for model in ArpsModel:
+        fit = _fit_single_model(t, q, model)
+        if fit is not None:
+            fits.append(fit)
 
     if not fits:
-        reason = "too few data points to fit" if len(q) < MIN_POINTS_TO_FIT else "no Arps form converged"
+        # Exponential/harmonic (k=2) need n>=4; hyperbolic (k=3) needs n>=5.
+        # If even the least-demanding model couldn't be attempted, it's a
+        # data problem, not a convergence problem.
+        reason = "too few data points to fit" if len(q) < 4 else "no Arps form converged"
         return {
             "model": None,
             "qi": float("nan"),
@@ -261,8 +287,17 @@ def fit_all_cycles(cycles_df: pd.DataFrame, well_series_by_battery: dict[str, di
     for row in fittable.itertuples(index=False):
         series = well_series_by_battery[row.Battery][row.FromToID]
         segment = series.loc[row.start : row.end]
-        q = segment.to_numpy()
-        t = np.arange(len(q), dtype=float)
+        q_raw = segment.to_numpy()
+        t_raw = np.arange(len(q_raw), dtype=float)
+
+        # data.well_oil_series zero-fills months absent from Petrinex (soak /
+        # shut-in), and those aren't decline observations — a mid-cycle
+        # workover shut-in, for instance, isn't the reservoir declining to
+        # zero, it's downtime. Dropping them keeps the fit shaped by actual
+        # production; t stays the true elapsed month so the remaining
+        # points' timing is still correct, just not contiguous.
+        producing = q_raw > 0
+        t, q = t_raw[producing], q_raw[producing]
 
         fit = fit_cycle(t, q, short_cycle=row.short_cycle)
         rows.append(

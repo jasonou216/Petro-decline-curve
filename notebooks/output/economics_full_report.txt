@@ -1,60 +1,60 @@
 === 1. NPV distribution (all 1,875 high-confidence cycles) ===
-count    1.875000e+03
-mean     8.256988e+05
-std      2.175080e+06
-min     -1.982510e+05
-25%      2.171644e+04
-50%      3.073846e+05
-75%      9.335261e+05
-max      4.214982e+07
+count    1.978000e+03
+mean     7.969743e+05
+std      2.056459e+06
+min     -1.929845e+05
+25%      2.954507e+04
+50%      3.150645e+05
+75%      9.025636e+05
+max      4.021528e+07
 
-Negative NPV: 427 cycles (22.8%)
-Non-negative NPV: 1448 cycles (77.2%)
-Sum of negative NPV: $-37,130,924
-Sum of positive NPV: $1,585,316,155
-Net total NPV: $1,548,185,231
+Negative NPV: 428 cycles (21.6%)
+Non-negative NPV: 1550 cycles (78.4%)
+Sum of negative NPV: $-35,667,177
+Sum of positive NPV: $1,612,082,288
+Net total NPV: $1,576,415,111
 
 === 2. Well-level rollup ===
-Total wells: 1167
-Wells with negative total NPV (all their HC cycles combined): 210 (18.0%)
+Total wells: 1190
+Wells with negative total NPV (all their HC cycles combined): 201 (16.9%)
 
 Top 5 wells by total NPV:
      Battery             FromToID  n_cycles    total_NPV     total_EUR
-Nabiye 11-23 ABWI105110806603W400         1 4.214982e+07 125966.511493
-Nabiye 11-23 ABWI119120806603W400         1 3.737280e+07 110596.604248
-Nabiye 11-23 ABWI110131706603W400         1 3.648675e+07 107094.119799
-Nabiye 11-23 ABWI103032006603W400         1 2.170687e+07  64683.600952
-Nabiye 11-23 ABWI112131706603W400         1 2.148622e+07  61997.113278
+Nabiye 11-23 ABWI105110806603W400         1 4.021528e+07 126990.387343
+Nabiye 11-23 ABWI119120806603W400         1 3.565648e+07 111779.741807
+Nabiye 11-23 ABWI110131706603W400         1 3.481090e+07 108921.386245
+Nabiye 11-23 ABWI103032006603W400         1 2.070617e+07  65548.462727
+Nabiye 11-23 ABWI112131706603W400         1 2.049559e+07  63290.531610
 
 Bottom 5 wells by total NPV:
                Battery             FromToID  n_cycles      total_NPV  total_EUR
-Mahihkan Battery 02-21 ABWI105062206504W400         2 -347041.519555 118.004041
-Mahihkan Battery 02-21 ABWI104152106504W400         2 -350703.865970 128.548444
-Mahihkan Battery 02-21 ABWI104073406504W400         2 -366628.426617  77.860110
-Mahihkan Battery 02-21 ABWI110112606504W400         2 -387247.267607  23.194643
-Mahihkan Battery 02-21 ABWI103102706504W400         2 -391514.189959  17.348206
+Mahihkan Battery 02-21 ABWI106070306604W400         2 -335532.440047 191.685252
+Mahihkan Battery 02-21 ABWI105062206504W400         2 -344136.103428 167.001577
+Mahihkan Battery 02-21 ABWI105121506504W400         2 -349841.037557 148.956886
+Mahihkan Battery 02-21 ABWI104152106504W400         2 -350264.773645 150.881948
+Mahihkan Battery 02-21 ABWI104122606504W400         2 -352893.222995 141.778465
 
 === 3. WTI x discount-rate sensitivity grid (full scale) ===
-Live WTI at run time: $86.48/bbl (as of 2026-08-18)
+Live WTI at run time: $83.90/bbl (as of 2026-08-25)
 price_scenario  wti_price_usd_per_bbl  wcs_price_usd_per_bbl  discount_rate_annual    total_NPV
-        low_50                  50.00                  33.00                  0.08 3.110331e+08
-        low_50                  50.00                  33.00                  0.10 3.060146e+08
-        low_50                  50.00                  33.00                  0.15 2.941705e+08
-        mid_70                  70.00                  53.00                  0.08 9.970662e+08
-        mid_70                  70.00                  53.00                  0.10 9.870292e+08
-        mid_70                  70.00                  53.00                  0.15 9.633410e+08
-       high_90                  90.00                  73.00                  0.08 1.683099e+09
-       high_90                  90.00                  73.00                  0.10 1.668044e+09
-       high_90                  90.00                  73.00                  0.15 1.632511e+09
-          live                  86.48                  69.48                  0.08 1.562357e+09
-          live                  86.48                  69.48                  0.10 1.548185e+09
-          live                  86.48                  69.48                  0.15 1.514737e+09
+        low_50                   50.0                   33.0                  0.08 3.415741e+08
+        low_50                   50.0                   33.0                  0.10 3.361310e+08
+        low_50                   50.0                   33.0                  0.15 3.232851e+08
+        mid_70                   70.0                   53.0                  0.08 1.078748e+09
+        mid_70                   70.0                   53.0                  0.10 1.067862e+09
+        mid_70                   70.0                   53.0                  0.15 1.042170e+09
+       high_90                   90.0                   73.0                  0.08 1.815922e+09
+       high_90                   90.0                   73.0                  0.10 1.799593e+09
+       high_90                   90.0                   73.0                  0.15 1.761055e+09
+          live                   83.9                   66.9                  0.08 1.591084e+09
+          live                   83.9                   66.9                  0.10 1.576415e+09
+          live                   83.9                   66.9                  0.15 1.541795e+09
 
 === 4. Cross-check: does negative NPV skew toward later, lower-EUR cycles? ===
-Negative-NPV cycles (n=427): median cycle_number=3, 56.7% at position 3rd+, median EUR=274.5 m3
-Non-negative-NPV cycles (n=1448): median cycle_number=2, 48.7% at position 3rd+, median EUR=1931.1 m3
+Negative-NPV cycles (n=428): median cycle_number=3, 59.3% at position 3rd+, median EUR=361.7 m3
+Non-negative-NPV cycles (n=1550): median cycle_number=2, 48.6% at position 3rd+, median EUR=2160.6 m3
 
 Position breakdown (share of each bucket that's negative NPV):
-  1st: 98 / 514 negative (19.1%)
-  2nd: 87 / 414 negative (21.0%)
-  3rd+: 242 / 947 negative (25.6%)
+  1st: 93 / 531 negative (17.5%)
+  2nd: 81 / 440 negative (18.4%)
+  3rd+: 254 / 1007 negative (25.2%)

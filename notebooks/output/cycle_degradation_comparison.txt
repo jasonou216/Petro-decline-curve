@@ -1,99 +1,99 @@
 
 ======================================================================
-Combined (n=1875 high-confidence cycles)
+Combined (n=1978 high-confidence cycles)
 ======================================================================
 --- Within-well trajectory: Combined ---
-  1st HC cycle -> 2nd HC cycle (555 wells):
-    qi: 169 up (30.5%) / 386 down (69.5%) of 555 wells
-    Di: 260 up (46.8%) / 295 down (53.2%) of 555 wells
-    b: 142 up (25.6%) / 131 down (23.6%), 282 flat of 555 wells
-    EUR: 232 up (41.8%) / 323 down (58.2%) of 555 wells
-  2nd HC cycle -> 3rd HC cycle (134 wells):
-    qi: 41 up (30.6%) / 93 down (69.4%) of 134 wells
-    Di: 65 up (48.5%) / 69 down (51.5%) of 134 wells
-    b: 34 up (25.4%) / 28 down (20.9%), 72 flat of 134 wells
-    EUR: 48 up (35.8%) / 86 down (64.2%) of 134 wells
-  3-point monotonic trend classification (134 wells with 3+ HC cycles):
-    qi: 6 monotonic-increasing, 62 monotonic-decreasing, 66 mixed/non-monotonic (of 134)
-    Di: 27 monotonic-increasing, 27 monotonic-decreasing, 80 mixed/non-monotonic (of 134)
-    b: 3 monotonic-increasing, 0 monotonic-decreasing, 131 mixed/non-monotonic (of 134)
-    EUR: 12 monotonic-increasing, 45 monotonic-decreasing, 77 mixed/non-monotonic (of 134)
+  1st HC cycle -> 2nd HC cycle (609 wells):
+    qi: 182 up (29.9%) / 427 down (70.1%) of 609 wells
+    Di: 294 up (48.3%) / 315 down (51.7%) of 609 wells
+    b: 160 up (26.3%) / 138 down (22.7%), 311 flat of 609 wells
+    EUR: 244 up (40.1%) / 365 down (59.9%) of 609 wells
+  2nd HC cycle -> 3rd HC cycle (160 wells):
+    qi: 52 up (32.5%) / 108 down (67.5%) of 160 wells
+    Di: 74 up (46.2%) / 86 down (53.8%) of 160 wells
+    b: 42 up (26.2%) / 42 down (26.2%), 76 flat of 160 wells
+    EUR: 61 up (38.1%) / 99 down (61.9%) of 160 wells
+  3-point monotonic trend classification (160 wells with 3+ HC cycles):
+    qi: 9 monotonic-increasing, 73 monotonic-decreasing, 78 mixed/non-monotonic (of 160)
+    Di: 28 monotonic-increasing, 30 monotonic-decreasing, 102 mixed/non-monotonic (of 160)
+    b: 0 monotonic-increasing, 0 monotonic-decreasing, 160 mixed/non-monotonic (of 160)
+    EUR: 15 monotonic-increasing, 51 monotonic-decreasing, 94 mixed/non-monotonic (of 160)
 
 --- Cross-sectional: Combined ---
-  1st-position: n=514, 3rd+-position: n=947
-    qi: median 1st=346.9, median 3rd+=264.8 (down from 1st to 3rd+)
-    Di: median 1st=0.2592, median 3rd+=0.2508 (down from 1st to 3rd+)
-    b: median 1st=0, median 3rd+=0 (flat from 1st to 3rd+)
-    EUR: median 1st=1664, median 3rd+=1109 (down from 1st to 3rd+)
+  1st-position: n=531, 3rd+-position: n=1007
+    qi: median 1st=347, median 3rd+=263.8 (down from 1st to 3rd+)
+    Di: median 1st=0.2352, median 3rd+=0.2393 (up from 1st to 3rd+)
+    b: median 1st=0, median 3rd+=1 (up from 1st to 3rd+)
+    EUR: median 1st=1949, median 3rd+=1309 (down from 1st to 3rd+)
 
 --- Agreement check: Combined ---
-    qi: within-well majority=down (169up/386down), cross-sectional=down -> AGREE
-    Di: within-well majority=down (260up/295down), cross-sectional=down -> AGREE
-    b: within-well majority=up (142up/131down), cross-sectional=flat -> FLAT/INCONCLUSIVE
-    EUR: within-well majority=down (232up/323down), cross-sectional=down -> AGREE
+    qi: within-well majority=down (182up/427down), cross-sectional=down -> AGREE
+    Di: within-well majority=down (294up/315down), cross-sectional=up -> DIVERGE
+    b: within-well majority=up (160up/138down), cross-sectional=up -> AGREE
+    EUR: within-well majority=down (244up/365down), cross-sectional=down -> AGREE
 
 ======================================================================
-Mahihkan Battery 02-21 (n=1398 high-confidence cycles)
+Mahihkan Battery 02-21 (n=1485 high-confidence cycles)
 ======================================================================
 --- Within-well trajectory: Mahihkan Battery 02-21 ---
-  1st HC cycle -> 2nd HC cycle (384 wells):
-    qi: 129 up (33.6%) / 255 down (66.4%) of 384 wells
-    Di: 191 up (49.7%) / 193 down (50.3%) of 384 wells
-    b: 105 up (27.3%) / 103 down (26.8%), 176 flat of 384 wells
-    EUR: 161 up (41.9%) / 223 down (58.1%) of 384 wells
-  2nd HC cycle -> 3rd HC cycle (81 wells):
-    qi: 24 up (29.6%) / 57 down (70.4%) of 81 wells
-    Di: 40 up (49.4%) / 41 down (50.6%) of 81 wells
-    b: 21 up (25.9%) / 21 down (25.9%), 39 flat of 81 wells
-    EUR: 28 up (34.6%) / 53 down (65.4%) of 81 wells
-  3-point monotonic trend classification (81 wells with 3+ HC cycles):
-    qi: 4 monotonic-increasing, 33 monotonic-decreasing, 44 mixed/non-monotonic (of 81)
-    Di: 20 monotonic-increasing, 15 monotonic-decreasing, 46 mixed/non-monotonic (of 81)
-    b: 2 monotonic-increasing, 0 monotonic-decreasing, 79 mixed/non-monotonic (of 81)
-    EUR: 7 monotonic-increasing, 25 monotonic-decreasing, 49 mixed/non-monotonic (of 81)
+  1st HC cycle -> 2nd HC cycle (433 wells):
+    qi: 138 up (31.9%) / 295 down (68.1%) of 433 wells
+    Di: 218 up (50.3%) / 215 down (49.7%) of 433 wells
+    b: 114 up (26.3%) / 103 down (23.8%), 216 flat of 433 wells
+    EUR: 177 up (40.9%) / 256 down (59.1%) of 433 wells
+  2nd HC cycle -> 3rd HC cycle (95 wells):
+    qi: 31 up (32.6%) / 64 down (67.4%) of 95 wells
+    Di: 46 up (48.4%) / 49 down (51.6%) of 95 wells
+    b: 25 up (26.3%) / 26 down (27.4%), 44 flat of 95 wells
+    EUR: 34 up (35.8%) / 61 down (64.2%) of 95 wells
+  3-point monotonic trend classification (95 wells with 3+ HC cycles):
+    qi: 5 monotonic-increasing, 40 monotonic-decreasing, 50 mixed/non-monotonic (of 95)
+    Di: 18 monotonic-increasing, 17 monotonic-decreasing, 60 mixed/non-monotonic (of 95)
+    b: 0 monotonic-increasing, 0 monotonic-decreasing, 95 mixed/non-monotonic (of 95)
+    EUR: 7 monotonic-increasing, 30 monotonic-decreasing, 58 mixed/non-monotonic (of 95)
 
 --- Cross-sectional: Mahihkan Battery 02-21 ---
-  1st-position: n=404, 3rd+-position: n=669
-    qi: median 1st=310.6, median 3rd+=250.7 (down from 1st to 3rd+)
-    Di: median 1st=0.2283, median 3rd+=0.2398 (up from 1st to 3rd+)
-    b: median 1st=0, median 3rd+=0 (flat from 1st to 3rd+)
-    EUR: median 1st=1542, median 3rd+=1068 (down from 1st to 3rd+)
+  1st-position: n=421, 3rd+-position: n=719
+    qi: median 1st=313.5, median 3rd+=251.7 (down from 1st to 3rd+)
+    Di: median 1st=0.2153, median 3rd+=0.2342 (up from 1st to 3rd+)
+    b: median 1st=0, median 3rd+=1 (up from 1st to 3rd+)
+    EUR: median 1st=1677, median 3rd+=1245 (down from 1st to 3rd+)
 
 --- Agreement check: Mahihkan Battery 02-21 ---
-    qi: within-well majority=down (129up/255down), cross-sectional=down -> AGREE
-    Di: within-well majority=down (191up/193down), cross-sectional=up -> DIVERGE
-    b: within-well majority=up (105up/103down), cross-sectional=flat -> FLAT/INCONCLUSIVE
-    EUR: within-well majority=down (161up/223down), cross-sectional=down -> AGREE
+    qi: within-well majority=down (138up/295down), cross-sectional=down -> AGREE
+    Di: within-well majority=up (218up/215down), cross-sectional=up -> AGREE
+    b: within-well majority=up (114up/103down), cross-sectional=up -> AGREE
+    EUR: within-well majority=down (177up/256down), cross-sectional=down -> AGREE
 
 ======================================================================
-Nabiye 11-23 (n=477 high-confidence cycles)
+Nabiye 11-23 (n=493 high-confidence cycles)
 ======================================================================
 --- Within-well trajectory: Nabiye 11-23 ---
-  1st HC cycle -> 2nd HC cycle (171 wells):
-    qi: 40 up (23.4%) / 131 down (76.6%) of 171 wells
-    Di: 69 up (40.4%) / 102 down (59.6%) of 171 wells
-    b: 37 up (21.6%) / 28 down (16.4%), 106 flat of 171 wells
-    EUR: 71 up (41.5%) / 100 down (58.5%) of 171 wells
-  2nd HC cycle -> 3rd HC cycle (53 wells):
-    qi: 17 up (32.1%) / 36 down (67.9%) of 53 wells
-    Di: 25 up (47.2%) / 28 down (52.8%) of 53 wells
-    b: 13 up (24.5%) / 7 down (13.2%), 33 flat of 53 wells
-    EUR: 20 up (37.7%) / 33 down (62.3%) of 53 wells
-  3-point monotonic trend classification (53 wells with 3+ HC cycles):
-    qi: 2 monotonic-increasing, 29 monotonic-decreasing, 22 mixed/non-monotonic (of 53)
-    Di: 7 monotonic-increasing, 12 monotonic-decreasing, 34 mixed/non-monotonic (of 53)
-    b: 1 monotonic-increasing, 0 monotonic-decreasing, 52 mixed/non-monotonic (of 53)
-    EUR: 5 monotonic-increasing, 20 monotonic-decreasing, 28 mixed/non-monotonic (of 53)
+  1st HC cycle -> 2nd HC cycle (176 wells):
+    qi: 44 up (25.0%) / 132 down (75.0%) of 176 wells
+    Di: 76 up (43.2%) / 100 down (56.8%) of 176 wells
+    b: 46 up (26.1%) / 35 down (19.9%), 95 flat of 176 wells
+    EUR: 67 up (38.1%) / 109 down (61.9%) of 176 wells
+  2nd HC cycle -> 3rd HC cycle (65 wells):
+    qi: 21 up (32.3%) / 44 down (67.7%) of 65 wells
+    Di: 28 up (43.1%) / 37 down (56.9%) of 65 wells
+    b: 17 up (26.2%) / 16 down (24.6%), 32 flat of 65 wells
+    EUR: 27 up (41.5%) / 38 down (58.5%) of 65 wells
+  3-point monotonic trend classification (65 wells with 3+ HC cycles):
+    qi: 4 monotonic-increasing, 33 monotonic-decreasing, 28 mixed/non-monotonic (of 65)
+    Di: 10 monotonic-increasing, 13 monotonic-decreasing, 42 mixed/non-monotonic (of 65)
+    b: 0 monotonic-increasing, 0 monotonic-decreasing, 65 mixed/non-monotonic (of 65)
+    EUR: 8 monotonic-increasing, 21 monotonic-decreasing, 36 mixed/non-monotonic (of 65)
 
 --- Cross-sectional: Nabiye 11-23 ---
-  1st-position: n=110, 3rd+-position: n=278
-    qi: median 1st=722.7, median 3rd+=313.9 (down from 1st to 3rd+)
-    Di: median 1st=0.3116, median 3rd+=0.2698 (down from 1st to 3rd+)
-    b: median 1st=0, median 3rd+=0 (flat from 1st to 3rd+)
-    EUR: median 1st=2192, median 3rd+=1194 (down from 1st to 3rd+)
+  1st-position: n=110, 3rd+-position: n=288
+    qi: median 1st=724.7, median 3rd+=313.7 (down from 1st to 3rd+)
+    Di: median 1st=0.2982, median 3rd+=0.2473 (down from 1st to 3rd+)
+    b: median 1st=0, median 3rd+=1 (up from 1st to 3rd+)
+    EUR: median 1st=2588, median 3rd+=1528 (down from 1st to 3rd+)
 
 --- Agreement check: Nabiye 11-23 ---
-    qi: within-well majority=down (40up/131down), cross-sectional=down -> AGREE
-    Di: within-well majority=down (69up/102down), cross-sectional=down -> AGREE
-    b: within-well majority=up (37up/28down), cross-sectional=flat -> FLAT/INCONCLUSIVE
-    EUR: within-well majority=down (71up/100down), cross-sectional=down -> AGREE
+    qi: within-well majority=down (44up/132down), cross-sectional=down -> AGREE
+    Di: within-well majority=down (76up/100down), cross-sectional=down -> AGREE
+    b: within-well majority=up (46up/35down), cross-sectional=up -> AGREE
+    EUR: within-well majority=down (67up/109down), cross-sectional=down -> AGREE
