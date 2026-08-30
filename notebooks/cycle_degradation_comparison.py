@@ -1,16 +1,17 @@
 """Phase 4: within-well and cross-sectional cycle-degradation comparison.
 
-Uses only the 1,875 high-confidence fits from decline_fits_full.csv —
-low-confidence cycles stay in that file untouched, just excluded here.
-Computes per-cycle EUR (petro_decline.eur.cycle_eur) and compares
-qi/Di/b/EUR two ways:
+Uses only the high-confidence fits from decline_fits_full.csv (see the
+printed counts at the top of each run's output for the exact numbers this
+version produces) — low-confidence cycles stay in that file untouched, just
+excluded here. Computes per-cycle EUR (petro_decline.eur.cycle_eur) and
+compares qi/Di/b/EUR two ways:
 
   1. Within-well trajectory (primary): each well's own high-confidence
      cycles, re-ranked chronologically among just its HC cycles (1st HC
      cycle, 2nd HC cycle, ...) — NOT the same as the raw cycle_number, since
      a well can have a low-confidence cycle sitting between two HC ones.
-     Compared 1st->2nd (555 wells) and 2nd->3rd (subset of those 134 wells
-     reaching a 3rd HC cycle).
+     Compared 1st->2nd and 2nd->3rd (a subset of those reaching a 3rd HC
+     cycle).
   2. Cross-sectional (secondary): all cycles at raw cycle_number==1 pooled
      vs. all cycles at cycle_number>=3 pooled, regardless of well — this
      *does* use the raw position (not the HC-only re-rank), matching how the

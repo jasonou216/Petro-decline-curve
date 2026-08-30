@@ -1,4 +1,4 @@
-=== 1. NPV distribution (all 1,875 high-confidence cycles) ===
+=== 1. NPV distribution (all 1,978 high-confidence cycles) ===
 count    1.978000e+03
 mean     7.969743e+05
 std      2.056459e+06

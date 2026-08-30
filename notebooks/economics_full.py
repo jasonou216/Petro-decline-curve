@@ -1,4 +1,4 @@
-"""Phase 5: full-scale economics across all 1,875 high-confidence cycles.
+"""Phase 5: full-scale economics across every high-confidence cycle.
 
 Uses live WTI (via petro_decline.economics.load_assumptions, EIA API with a
 config.yaml fallback) and everything else from config.yaml. Validated first
@@ -26,7 +26,7 @@ OUTPUT_DIR = Path(__file__).resolve().parent / "output"
 
 
 def report_npv_distribution(econ: pd.DataFrame) -> list[str]:
-    lines = ["=== 1. NPV distribution (all 1,875 high-confidence cycles) ==="]
+    lines = [f"=== 1. NPV distribution (all {len(econ):,} high-confidence cycles) ==="]
     lines.append(econ["NPV"].describe().to_string())
 
     negative = econ[econ["NPV"] < 0]

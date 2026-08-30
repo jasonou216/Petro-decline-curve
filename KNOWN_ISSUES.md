@@ -110,6 +110,47 @@ actual logic lives.
     an oversight, but it does mean a cycle with a real mid-cycle interruption gets
     modeled revenue for the months it was actually shut in, part of why total EUR moved
     after fix #3 went in.
+14. **The two batteries have no meaningfully different pre-2022 history, so a "1st cycle"
+    isn't always a real steam cycle.** For a well whose entire production history starts
+    at the 2022 data horizon, what's left after the startup ramp is excluded still gets
+    labeled "cycle 1", even when there was never a second steam job inside this window.
+    It's initial-production decline wearing cycle terminology built for a genuine
+    re-stimulation. This project's own top-NPV well came online mid-window and shows no
+    re-steam pattern at all, its "cycle 1" boundary is a peak-detection artifact from
+    ordinary noise. 581 of 1,190 wells with a usable fit (49%) have exactly one
+    high-confidence cycle. The README now leads with the degradation finding (which
+    rests on wells with a genuine 1st->2nd transition) rather than the dollar totals,
+    and states this caveat directly in Key findings.
+15. **No Crown royalty or abandonment/reclamation liability modeled.** Modelled NPV is
+    pre-royalty gross-project cash flow. Alberta oil sands royalty runs roughly 1-9% of
+    gross revenue pre-payout and 25-40% of net post-payout, not modeling it at all
+    materially overstates every NPV figure here, on top of the diluent and cost-assumption
+    caveats already listed. Added to README > Limitations as the most conspicuous
+    omission for an upstream-Alberta audience.
+16. **Currency wasn't stated anywhere.** All monetary figures (WTI, WCS, opex, steam
+    cost, NPV) are USD; `config.yaml` and the dashboard didn't say so explicitly, and
+    Alberta operating costs are normally quoted in CAD. Now stated in README >
+    Limitations.
+17. **The R2 >= 0.5 high-confidence threshold is a starting guess, not validated, and
+    the totals are sensitive to it.** The top well above has R2 = 0.59, inside the
+    lenient end of that band. Tightening to R2 >= 0.7 as a cross-check keeps 69.6% of
+    cycles but only 67.3% of modelled NPV. Now stated in README > Limitations with the
+    actual numbers.
+
+Also fixed: `economics_full.py` and `cycle_degradation_comparison.py` had hardcoded
+counts ("1,875 high-confidence cycles", "555 wells", "134 wells") left over from before
+the AICc/zero-fill re-fit changed the actual numbers to 1,978 / 609 / 160,
+`economics_full_report.txt` literally read "all 1,875" directly above a table that
+summed to 1,978. The one that mattered (the printed report header) is now an f-string
+off `len(econ)`; the two docstrings were reworded to not hardcode a number that the
+next re-run could invalidate again. `DEVNOTES.md` claimed "every module has a
+corresponding `tests/test_*.py`" when only a single `assert True` smoke test existed,
+now genuinely true: `tests/test_data.py`, `test_decline.py`, `test_eur.py`, and
+`test_economics.py` add 24 real tests (parameter recovery on synthetic Arps data, the
+EUR/NPV consistency property directly, the zero-fill exclusion behavior, IRR/payback
+edge cases). The dashboard's IRR display also now distinguishes "n/a (never negative)"
+(cash flow profitable from month zero, common on the biggest wells) from "n/a (never
+profitable)", instead of one bare "(n/a)" for both.
 
 ---
 

@@ -863,20 +863,32 @@ def render_economics_whatif_panel(battery: str, well_id: str) -> None:
         key=f"whatif_total_{slug}_{well_id}",
     )
 
+    def _format_irr(row: pd.Series) -> str:
+        """IRR is a root-finding solution over a handful of sparse monthly cash
+        flows, not a bounded metric. Two distinct reasons it can come back NaN,
+        worth telling apart rather than showing a bare "(n/a)" for both: the cash
+        flow never changes sign, which for the biggest wells usually means month
+        zero's revenue alone already covers the steam cost (a good sign, not a
+        missing value), versus a cycle that never turns a profit at all. Past
+        500% on a real root it's not telling you anything IRR is meant to convey
+        either, so that's flagged rather than shown as a fake-precise number.
+        """
+        irr_value, npv_value = row["IRR"], row["NPV"]
+        if pd.isna(irr_value):
+            if pd.notna(npv_value) and npv_value >= 0:
+                return "n/a (never negative)"
+            return "n/a (never profitable)"
+        if irr_value > 5.0:
+            return ">500%, not meaningful"
+        return f"{irr_value * 100:.0f}%"
+
     display = pd.DataFrame(
         {
             "cycle #": whatif["cycle_number"].astype(str),
             "model": whatif["model"],
             "EUR": whatif["EUR"].map(lambda v: f"{v:,.0f}" if pd.notna(v) else "(n/a)"),
             "NPV (what if)": whatif["NPV"].map(lambda v: f"${v:,.0f}" if pd.notna(v) else "(n/a)"),
-            # IRR is a root-finding solution over a handful of sparse monthly cash
-            # flows, not a bounded metric — a cycle with a tiny or front-loaded cost
-            # basis can solve to a technically-correct but meaningless four- or
-            # five-digit percentage. Past 500% it's not telling you anything IRR is
-            # meant to convey, so it's shown as a flag rather than a fake-precise number.
-            "IRR (what if)": whatif["IRR"].map(
-                lambda v: "(n/a)" if pd.isna(v) else (">500%, not meaningful" if v > 5.0 else f"{v * 100:.0f}%")
-            ),
+            "IRR (what if)": whatif.apply(_format_irr, axis=1),
         }
     )
     st.dataframe(
