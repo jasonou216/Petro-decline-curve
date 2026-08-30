@@ -1,6 +1,6 @@
 # Known issues
 
-A candid record of technical reviews of this project: what got fixed, and what's staying as a documented limitation. Kept here instead of buried in chat history.
+Notes from going back over this project critically after the first version was working: what I caught and fixed, and what I'm leaving as a known limitation instead of pretending it's not there.
 
 ## Fixed
 
@@ -50,4 +50,4 @@ All fixes to `decline.py`/`eur.py` changed real fitted results, so the full pipe
 
 ---
 
-Came out of line-by-line reviews checking the Arps forms, EUR math, bbl/m3 conversion, discount convention, and cycle-detection assumptions against the actual code and raw Petrinex data, plus clicking through the live dashboard.
+Found by going back through the Arps forms, EUR math, bbl/m3 conversion, discount convention, and cycle-detection assumptions line by line against the actual code and raw Petrinex data, and clicking through the live dashboard myself.
