@@ -44,17 +44,33 @@ All three code fixes above changed the actual fitted results, so the full pipeli
 the README and every dashboard screenshot reflects the corrected pipeline, not the
 original run.
 
+A follow-up pass, verifying the fixes above against the live dashboard, caught two
+places the first round missed:
+
+13. **The in-app Glossary still described the old EUR method** (a continuous integral,
+    with the old `∫₀ᵀ q(t) dt` formula), which by then contradicted both the README and
+    the actual code. Reworded to the discrete sum, matching everywhere else. (`app.py`)
+14. **The Glossary's Confidence entry didn't mention the new low-confidence reason**
+    (not enough producing months left to support a model, once shut-in months are
+    dropped). Added. (`app.py`)
+
+Also cleaned up two stale references to plain "AIC" (should read "AICc") left over in
+`decline.py`'s module docstring and `fit_cycle`'s docstring after the AICc fix, and
+moved a comment block that had gone stale (it described a `MIN_POINTS_TO_FIT` constant
+that no longer exists, since the check moved into `_fit_single_model`) down to where the
+actual logic lives.
+
 ## Documented, not fixed
 
-6. **Petrinex's public monthly Files API only serves 2022 onward,** so the 54-month window
+6. **Petrinex's public monthly Files API 404s before 2022-01,** so the 54-month window
    this project pulls is a fraction of these wells' real production history (Cold Lake has
-   produced since the 1980s-90s). AER's own product catalogue lists conventional
-   volumetric data back to 2002 through a separate channel, but free self-service only
-   covers the most recent 4 years, older periods need a compilation/purchase request that
-   this project hasn't pursued. With an average of 1-1.75 high-confidence cycles per well,
-   most wells here show one partial cycle inside this window, not a real multi-decade
-   stack, so the degradation finding rests on a minority of wells with 2+ visible cycles
-   rather than deep per-well history. See README > Limitations.
+   produced since the 1980s-90s). Older data appears to exist through other Petrinex/AER
+   channels (AER's product catalogue references conventional volumetric data back to
+   2002), but this project didn't verify exactly what's free vs. request-only through
+   those channels and didn't pursue pulling it. With an average of 1-1.75 high-confidence
+   cycles per well, most wells here show one partial cycle inside this window, not a real
+   multi-decade stack, so the degradation finding rests on a minority of wells with 2+
+   visible cycles rather than deep per-well history. See README > Limitations.
 7. **No diluent accounting on the revenue side.** WCS is priced directly against raw
    bitumen volume with a flat differential; a real bitumen netback separately nets out
    diluent (condensate) cost against a blended price. This project doesn't model that
@@ -86,6 +102,14 @@ original run.
     range midpoint per industry commentary") rather than one specific, dated, named source
     (AER, GLJ/Sproule, or a dated Reuters WCS-WTI print). Fine for an illustrative
     portfolio assumption, would need a real citation for anything more.
+13. **EUR/NPV still project over a cycle's full duration, including shut-in months
+    dropped from the fit.** The curve is fit only to actual producing months (see #3
+    above), but EUR and NPV evaluate that fitted curve across the cycle's whole observed
+    span, including whichever months were excluded from the fit itself. That's a
+    deliberate "what the underlying decline trend implies over this window" choice, not
+    an oversight, but it does mean a cycle with a real mid-cycle interruption gets
+    modeled revenue for the months it was actually shut in, part of why total EUR moved
+    after fix #3 went in.
 
 ---
 

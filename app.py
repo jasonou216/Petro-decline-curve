@@ -154,17 +154,20 @@ GLOSSARY = {
     "Confidence": {
         "short": "Whether a cycle's fit is trustworthy enough to use.",
         "full": "Whether a cycle's fit is trustworthy. A cycle is flagged low confidence if it's too "
-        "short, has a poor R2, or its fit parameters hit unreasonable bounds (an implausibly high Di, or "
-        "b pinned right at 0 or 2). Low-confidence cycles are left out of EUR and NPV entirely, rather "
-        "than reported with a misleading number.",
+        "short, didn't have enough producing months left to support the model it picked once shut-in "
+        "months were excluded, has a poor R2, or its fit parameters hit unreasonable bounds (an "
+        "implausibly high Di, or b pinned right at 0 or 2). Low-confidence cycles are left out of EUR "
+        "and NPV entirely, rather than reported with a misleading number.",
     },
     "EUR": {
-        "short": "Estimated total oil this cycle will produce (m3).",
-        "full": "Estimated Ultimate Recovery: the total oil a cycle is expected to produce, found by "
-        "integrating the fitted curve over the cycle's own observed length — not out to an economic "
-        "limit, since that would need cost and price assumptions this part of the dashboard doesn't use:\n\n"
-        "$$EUR = \\int_0^{T} q(t)\\, dt$$\n\n"
-        "where T is the cycle's duration in months.",
+        "short": "Total oil this cycle's fitted curve produces over its own window (m3).",
+        "full": "Estimated Ultimate Recovery: really the cumulative production the fitted curve implies "
+        "over the cycle's own observed window, not out to an economic limit, since that would need cost "
+        "and price assumptions this part of the dashboard doesn't use. Summed month by month, the same "
+        "grid NPV is built from, so the two numbers are always consistent with each other:\n\n"
+        "$$EUR = \\sum_{t=0}^{T-1} q(t)$$\n\n"
+        "where T is the cycle's duration in months. For a non-final cycle this is close to the well's "
+        "actual produced volume, there's less \"estimate\" in it than the name usually implies.",
     },
     "NPV": {
         "short": "Present-day dollar value of a cycle (USD).",

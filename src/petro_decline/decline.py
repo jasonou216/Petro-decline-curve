@@ -46,7 +46,7 @@ peak itself, q(0) = qi by construction for all three forms):
          why b is bounded to [0, 2] here rather than left unconstrained.
 
 All three forms are fit independently per cycle and the best one is kept by
-AIC (see `fit_cycle`) — this mirrors standard decline-curve-analysis
+AICc (see `fit_cycle`) — this mirrors standard decline-curve-analysis
 practice of comparing Arps forms per well/segment rather than assuming one
 form for an entire dataset.
 """
@@ -66,13 +66,8 @@ from scipy.optimize import curve_fit
 # exponential model already covers that limiting case as its own fit.
 B_BOUNDS = (1e-6, 2.0)
 
-# Minimum points required to attempt a model = its parameter count (k) + 2,
-# i.e. at least 2 residual degrees of freedom. This isn't just "enough to
-# solve the equations" (k points does that with zero residual DOF): with
-# n == k, curve_fit can pass through every point exactly, RSS collapses to
-# ~0, and AIC — even AICc — can't tell a genuine fit from an
-# over-parameterized one with nothing left to check it against. Requiring
-# n >= k + 2 also keeps AICc's correction term (below) always defined.
+# The minimum-points-per-model rule (n >= k + 2) lives in _fit_single_model,
+# right where k is known per model — see the comment there.
 
 # Thresholds for flagging a fit low_confidence — starting guesses for human
 # review, not validated cutoffs. MAX_PLAUSIBLE_DI: a nominal monthly decline
@@ -139,6 +134,13 @@ def _fit_single_model(t: np.ndarray, q: np.ndarray, model: ArpsModel) -> dict | 
     func = _ARPS_FUNCTIONS[model]
     k = 3 if model is ArpsModel.HYPERBOLIC else 2
     n = len(t)
+    # Require at least 2 residual degrees of freedom (n >= k + 2), not just
+    # "enough points to solve the equations" (k points does that with zero
+    # residual DOF): with n == k, curve_fit can pass through every point
+    # exactly, RSS collapses to ~0, and AIC — even AICc — can't tell a
+    # genuine fit from an over-parameterized one with nothing left to check
+    # it against. This also guarantees AICc's correction term (below) is
+    # always defined (its denominator is n - k - 1).
     if n < k + 2:
         return None
 
@@ -179,7 +181,7 @@ def _fit_single_model(t: np.ndarray, q: np.ndarray, model: ArpsModel) -> dict | 
 
 def fit_cycle(t: np.ndarray, q: np.ndarray, short_cycle: bool) -> dict:
     """Fit exponential, hyperbolic, and harmonic Arps to one cycle's post-peak
-    segment and return the best (lowest-AIC) fit, with a low_confidence flag.
+    segment and return the best (lowest-AICc) fit, with a low_confidence flag.
 
     AICc, not raw R², picks the winner: hyperbolic has an extra free parameter
     (b) and will almost always match or beat the nested exponential/harmonic
