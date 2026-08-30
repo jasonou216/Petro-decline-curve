@@ -96,6 +96,10 @@ streamlit run app.py
 
 Python, pandas, numpy, scipy, Streamlit, Plotly, PyYAML, python-dotenv, Petrinex public API, EIA public API.
 
+## Data license
+
+Petrinex data is Government of Alberta Crown copyright, acknowledged here. Used for non-commercial purposes per [Petrinex's terms of use](https://www.petrinex.ca/terms), which permit that without separate consent.
+
 ## Skills demonstrated
 
 Time-series analysis • signal processing (peak detection) • nonlinear curve fitting • statistical model selection (AICc) • financial modeling (NPV, IRR, sensitivity analysis) • API integration • data pipeline design • interactive dashboard development • unit testing • domain-specific problem framing (petroleum engineering)
