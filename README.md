@@ -31,7 +31,7 @@ Cold Lake bitumen is too thick to flow on its own, so operators use Cyclic Steam
 | Mahihkan Battery 02-21 | Imperial Oil | 1,457 | 1,485 | 1.02 | 4,083,003 | $1,029,957,347 | 18.2% (of 946) | 23.1% |
 | Nabiye 11-23 | Imperial Oil | 281 | 493 | 1.75 | 1,966,050 | $546,457,764 | 11.9% (of 244) | 17.2% |
 
-Combined: 69.6% of fitted cycles are low confidence, 21.6% of high-confidence cycles are negative NPV, total modelled NPV $1,576,415,111 (mean $797k, median $315k). **"Modelled NPV" is not an asset valuation**, see Key findings and Limitations for why. EUR is in m3 (Petrinex's unit). "Avg. HC cycles/well" is out of every well, including the ~half with zero or one.
+Combined: 69.6% of fitted cycles are low confidence, 21.6% of high-confidence cycles are negative NPV, total modelled NPV $1,576,415,111 (mean $797k, median $315k **per cycle**). **"Modelled NPV" is not an asset valuation**, see Key findings and Limitations for why. EUR is in m3 (Petrinex's unit). "Avg. HC cycles/well" is out of every well, including the ~half with zero or one.
 
 ## Theory
 
@@ -39,20 +39,20 @@ Combined: 69.6% of fitted cycles are low confidence, 21.6% of high-confidence cy
 
 **EUR**: `EUR = sum(t=0..T-1) q(t)`, where T is the cycle's observed duration, not an economic limit. Summed on the same monthly grid NPV uses, so the two are always consistent.
 
-**NPV**: `NPV = sum(t) [q_t * (price - opex) / (1+r)^t] - steam_cost`. Price is WCS (WTI minus differential), live from the EIA API with a `config.yaml` fallback.
+**NPV**: `NPV = sum(t) [q_t * (price - opex) / (1+r)^t] - steam_cost`. Price is WCS (WTI minus differential): a single day's live EIA spot quote held flat for the whole projection, not a forward strip, with a `config.yaml` fallback.
 
 ## Methodology notes
 
-- **Cycle detection**: peak detection with relative/local prominence (a peak must clear its own preceding trough, not the well's all-time max), 4-month minimum spacing, minimum-volume filter, startup ramp excluded. The 40% prominence threshold was checked, not assumed: 25 random borderline candidates judged by eye, ~60% were noise, confirming the cutoff.
+- **Cycle detection**: peak detection with relative/local prominence (a peak must clear its own preceding trough, not the well's all-time max), 4-month minimum spacing, minimum-volume filter, startup ramp excluded. The 40% prominence threshold was checked, not assumed: 25 rejected near-miss candidates (30-40% band) judged by eye, ~60% were confirmed noise, validating the cutoff.
 - **Confidence flagging**: low confidence if the cycle is too short, R2 is poor, a parameter hits its bound, or too few producing months remain. Most of the 69.6% low-confidence rate is real production being non-monotonic while Arps curves are strictly monotonic. Excluded from EUR/NPV totals.
 - **Shut-in months are excluded from fitting, not from EUR/NPV.** The curve fits producing months only, but still projects across the cycle's full duration, so a real mid-cycle interruption gets modeled revenue it didn't actually earn. Deliberate choice, not an oversight.
 
 ## Key findings
 
-- **The finding this project stands behind: recovery drops cycle-over-cycle.** qi declines in ~70% of wells, per-cycle recovery in ~60%, both within-well and cross-sectionally, across the 609 wells with a genuine 1st->2nd high-confidence transition (433 Mahihkan, see caveat below).
-- **"Cycle 1" isn't always a real steam cycle.** For a well whose whole history starts at the 2022 data horizon, what's left after the startup ramp still gets labeled "cycle 1", even with no real 2nd steam job. Example: this project's top-NPV well (`ABWI105110806603W400`, $40.2M) came online 2024-05, produced continuously since, no re-steam pattern in the raw data, its "cycle 1" is a peak-detection artifact (41% prominence vs. the 40% cutoff). 581 of 1,190 wells with a usable fit (49%) have exactly one HC cycle, mostly Nabiye.
+- **The finding this project stands behind: recovery drops cycle-over-cycle.** qi declines in ~70% of wells, per-cycle recovery in ~60%, both within-well and cross-sectionally, across the 609 wells with a genuine 1st->2nd high-confidence transition (433 Mahihkan). Caveat, addressed head-on: since "cycle 1" can itself be inflated by non-cyclic initial production (below), part of this drop is mechanical, not pure reservoir decline. The cross-sectional check, which doesn't depend on any well's "cycle 1" specifically, shows the same direction, which is why the finding holds up rather than being purely a labeling artifact.
+- **"Cycle 1" isn't always a real steam cycle.** For a well whose whole history starts at the 2022 data horizon, what's left after the startup ramp still gets labeled "cycle 1", even with no real 2nd steam job. Example: this project's top-NPV well (`ABWI105110806603W400`, $40.2M) came online 2024-05, produced continuously since, no re-steam pattern in the raw data, its "cycle 1" is a peak-detection artifact (41% prominence vs. the 40% cutoff). 581 of 1,190 wells with a usable fit (49%) have exactly one HC cycle, 88% of them Mahihkan (513 of 581), the older battery, not Nabiye.
 - **NPV/EUR totals are a scale illustration, not the headline.** Real barrels under illustrative cost assumptions, including "cycle 1"s that aren't real re-stimulations, skewed by the top 10 wells (14.5% of total NPV).
-- Negative-NPV share rises with cycle position (17.5% → 25.2%), but this is largely mechanical: steam cost is a flat $200k/cycle, so "negative NPV" is close to "produced under ~3,700 bbl", and later cycles produce less.
+- Negative-NPV share rises with cycle position (17.5% → 25.2%), but this is largely mechanical: steam cost is a flat $200k/cycle, so "negative NPV" is close to "produced under ~3,700 bbl at today's $83.90 WTI", a threshold that drifts with the live price, and later cycles produce less.
 
 ## Limitations
 
@@ -64,6 +64,7 @@ Combined: 69.6% of fitted cycles are low confidence, 21.6% of high-confidence cy
 - The two batteries are a hardcoded constant (`TARGET_BATTERIES` in `data.py`), not a runtime parameter. Built for CSS thermal specifically, wouldn't hold for conventional or SAGD without adaptation.
 - IRR can hit meaningless thousands-of-percent values for a tiny/front-loaded cost basis; NPV is the reliable number. IRR is also undefined (not a bug) when a cash flow never goes negative, shown as "n/a (never negative)".
 - Production is the instantaneous monthly rate (no mid-month convention). Curve fitting is unweighted, so early high-rate months dominate more than the tail, which is what EUR and late-cycle economics hinge on.
+- Two modeling shortcuts both flatter NPV slightly: the 10% discount rate is a nominal convention applied to flat, non-escalating (real) cash flows, which understates true NPV; and steam cost is charged in the same month as peak production (t=0), with no lag for the real steam-soak period beforehand.
 
 ## Files
 
@@ -83,7 +84,8 @@ Combined: 69.6% of fitted cycles are low confidence, 21.6% of high-confidence cy
 git clone https://github.com/jasonou216/Petro-decline-curve.git
 cd Petro-decline-curve
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\activate       # Windows
+source .venv/bin/activate    # Mac/Linux
 pip install -r requirements.txt
 # add a .env file with EIA_API_KEY=your-key-here (free at eia.gov/opendata)
 # without it, the dashboard falls back to config.yaml's dated price

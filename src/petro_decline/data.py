@@ -191,7 +191,15 @@ def identify_injectors(well_level: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataF
 
 
 def well_oil_series(well_level: pd.DataFrame, well_id: str) -> pd.Series:
-    """Monthly OIL volume for one well, indexed by ProductionMonth.
+    """Monthly oil-like (OIL + BIT) volume for one well, indexed by ProductionMonth.
+
+    Sums OIL_LIKE_PRODUCTS rather than filtering to "OIL" alone, matching
+    `identify_injectors`'s definition of production — a well reporting under
+    "BIT" instead of "OIL" (neither battery in this dataset actually does,
+    confirmed, but Cold Lake is a bitumen play, so it's not a hypothetical
+    worth ignoring) used to pass the injector screen but then get an
+    all-but-empty series here, a silent inconsistency rather than a real bug
+    given today's data.
 
     Reindexed to a complete monthly range between the well's first and last
     reported month, with missing months filled as 0 — a month absent from
@@ -203,8 +211,8 @@ def well_oil_series(well_level: pd.DataFrame, well_id: str) -> pd.Series:
     rows into the per-well monthly series both cycle detection and Arps
     fitting (decline.py) build on.
     """
-    well_df = well_level[(well_level["FromToID"] == well_id) & (well_level["ProductID"] == "OIL")]
-    series = well_df.set_index("ProductionMonth")["Volume"].sort_index()
+    well_df = well_level[(well_level["FromToID"] == well_id) & (well_level["ProductID"].isin(OIL_LIKE_PRODUCTS))]
+    series = well_df.groupby("ProductionMonth")["Volume"].sum().sort_index()
     full_range = pd.date_range(series.index.min(), series.index.max(), freq="MS")
     return series.reindex(full_range, fill_value=0.0)
 

@@ -17,6 +17,13 @@ A candid record of technical reviews of this project: what got fixed, and what's
 | 9 | Hardcoded cycle/well counts in `economics_full.py` / `cycle_degradation_comparison.py` went stale after the re-fit (1,875 → 1,978, 555 → 609, 134 → 160); `economics_full_report.txt` contradicted its own table | Report header is now an f-string off `len(econ)`; docstrings reworded; report regenerated |
 | 10 | `DEVNOTES.md` claimed full test coverage; only a trivial smoke test existed | Added 24 real tests across `test_data.py`, `test_decline.py`, `test_eur.py`, `test_economics.py` |
 | 11 | IRR `(n/a)` didn't distinguish "cash flow never negative" (good sign) from "never profitable" (bad) | Dashboard now shows which |
+| 24 | README said 581 single-HC-cycle wells were "mostly Nabiye" | Backwards: 513/581 (88%) are Mahihkan. Fixed |
+| 25 | "mean $797k, median $315k" NPV had no unit, read as per-well | Labeled per cycle; per-well is $1.32M/$575k |
+| 26 | "live from the EIA API" implied more than a single day's flat spot price with no forward curve | One sentence added in Theory |
+| 27 | 25-sample near-miss review wording ("~60% were noise, confirming the cutoff") read as 60% of *accepted* cycles | Clarified: 60% of *rejected* candidates |
+| 28 | `well_oil_series` filtered `ProductID == "OIL"` only; `identify_injectors` screens `{"OIL","BIT"}` | `well_oil_series` now sums the same set. Zero BIT rows in either battery, confirmed no-op (`git diff` on regenerated `cycles_full.csv` is empty) |
+| 29 | Flagship "recovery drops cycle-over-cycle" finding and the "cycle 1 isn't always real" caveat sat in separate bullets, never connected | Addressed head-on in the same bullet |
+| 30 | No `LICENSE`; "How to run" only showed Windows activation | Added MIT `LICENSE`; added the Mac/Linux command |
 
 All fixes to `decline.py`/`eur.py` changed real fitted results, so the full pipeline was re-run at full scale afterward, every number in the README and every screenshot reflects the corrected run.
 
@@ -36,6 +43,10 @@ All fixes to `decline.py`/`eur.py` changed real fitted results, so the full pipe
 | 21 | No Crown royalty or abandonment/reclamation liability modeled, understates cost materially | README > Limitations |
 | 22 | Currency (USD) wasn't stated anywhere | README > Limitations |
 | 23 | R2 >= 0.5 threshold isn't validated; 67.3% of NPV survives at R2 >= 0.7 | README > Limitations |
+| 31 | 10% discount rate is nominal, applied to flat/non-escalating cash flows, understates true NPV | README > Limitations |
+| 32 | Steam cost charged same month as peak production (t=0), no lag for the real steam-soak period | README > Limitations |
+| 33 | Dashboard metric cards may clip at narrow (tablet/laptop) widths; `st.metric` has no overflow handling | not pixel-verified live, code has no width/wrap handling either way |
+| 34 | Petrinex's redistribution terms for the committed filtered CSVs weren't confirmed | unresolved, needs a manual check of Petrinex/AER's actual terms of use |
 
 ---
 
