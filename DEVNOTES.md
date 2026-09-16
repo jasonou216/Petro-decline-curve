@@ -40,6 +40,7 @@ Source lives under `src/petro_decline/` (src-layout, installed editable via `pyp
 3. **`decline.py`**: fits exponential/hyperbolic/harmonic per cycle, picks the best by AICc (not raw R2 or plain AIC, both biased toward hyperbolic's extra parameter, especially at small n). Flags `low_confidence` if too short, poor R2, or a parameter pinned at its bound.
 4. **`eur.py`**: sums a fitted curve's monthly predicted volume over the cycle's own duration (not an economic limit).
 5. **`economics.py`**: per-cycle NPV/IRR/payback from monthly production, live WTI (EIA API, `config.yaml` fallback), rolled up per well.
+6. **`bi_export.py`**: reshapes the same pipeline outputs (2-5 above) into a star schema for the Power BI companion report (`bi_exports/dim_battery.csv`, `dim_well.csv`, `fact_cycle.csv`), doesn't recompute anything. Run with `python -m petro_decline.bi_export`. DAX measures for the Power BI side live in `docs/power_bi_measures.md`, not in this repo as a `.pbix`, since that's a binary file I build by hand in Power BI Desktop.
 
 `app.py` is the Streamlit entry point, thin UI/layout only, no analysis logic.
 
