@@ -77,6 +77,11 @@ Combined: 69.6% of fitted cycles are low confidence, 21.6% of high-confidence cy
 - [`tests/`](tests/): unit tests, one file per `src/petro_decline/` module
 - [`notebooks/detect_cycles_full.py`](notebooks/detect_cycles_full.py): full-scale cycle detection (feeds `decline.py`)
 - `data/processed/`, `notebooks/output/`: pipeline outputs, committed so the dashboard runs without re-pulling data
+- [`src/petro_decline/bi_export.py`](src/petro_decline/bi_export.py): star-schema CSV export (`bi_exports/`) for the Power BI companion report below
+
+## Power BI companion report
+
+A second, separate look at the same data: [`powerbi/petro-decline-curve.pbix`](powerbi/petro-decline-curve.pbix), built in Power BI Desktop against the star schema in `bi_exports/` (`dim_battery`, `dim_well`, `fact_cycle`). DAX measure definitions are in [`docs/power_bi_measures.md`](docs/power_bi_measures.md). Requires Power BI Desktop (free, Windows) to open.
 
 ## How to run
 
