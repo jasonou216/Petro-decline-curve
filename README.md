@@ -56,8 +56,8 @@ Combined: 69.6% of fitted cycles are low confidence, 21.6% of high-confidence cy
 
 ## Limitations
 
-- Petrinex's Files API 404s before 2022-01. Older data may exist via other Petrinex/AER channels (their catalogue references data back to 2002), not verified or pursued here. With ~1-1.75 HC cycles/well, most wells show one partial cycle, not a real multi-decade stack.
-- Revenue is priced at the WCS blended rate against raw bitumen volume with only a flat differential; a real bitumen netback nets out diluent (condensate, ~25-30% of WCS) separately, so netback here is somewhat optimistic.
+- Petrinex's Files API 404s before 2022-01. Older data may exist via other Petrinex/AER channels (their catalogue references data back to 2002), not verified or pursued here. With ~1-1.75 HC cycles/well, most wells show one partial cycle.
+- Revenue is priced at the WCS blended rate against raw bitumen volume with only a flat differential; a real bitumen netback nets out diluent (condensate, ~25-30% of WCS) separately, so netback here is optimistic.
 - **No Crown royalty or abandonment/reclamation liability.** Alberta oil sands royalty is ~1-9% of gross pre-payout, 25-40% of net post-payout. Not modeled at all, materially overstates every NPV figure.
 - All monetary figures are USD (unstated in the dashboard until now). Alberta opex is normally quoted CAD; no conversion applied.
 - The R2 >= 0.5 "high confidence" threshold is a starting guess, not validated. Tightening to R2 >= 0.7 keeps 69.6% of cycles but only 67.3% of NPV ($1.06B vs $1.58B), the totals are sensitive to this line.
@@ -115,4 +115,4 @@ Time-series analysis • signal processing (peak detection) • nonlinear curve 
 
 ## How this was built
 
-Claude (Anthropic) was used throughout as a coding assistant, implementation, debugging, and structured code review (see `KNOWN_ISSUES.md`). Every methodology call was mine: per-cycle vs. pad-level fitting, AIC-then-AICc model selection, what EUR/NPV should and shouldn't claim, which cost assumptions to flag as illustrative rather than real. Each was checked against the raw data before I accepted it, not taken on faith.
+Claude (Anthropic) was used throughout as a coding assistant, implementation, debugging, and structured code review (see `KNOWN_ISSUES.md`). Every methodology call was mine: per-cycle vs. pad-level fitting, AIC-then-AICc model selection, what EUR/NPV should and shouldn't claim, which cost assumptions to flag as illustrative rather than real. Each was checked against the raw data before I accepted it.
