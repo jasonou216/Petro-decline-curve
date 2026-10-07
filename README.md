@@ -1,6 +1,8 @@
 # Cold Lake CSS Decline Dashboard
 
-Per-cycle Arps decline curve analysis and project economics for two Cold Lake CSS batteries, built on real Alberta production data (Petrinex). Live dashboard: [cold-lake-petro-decline.streamlit.app](https://cold-lake-petro-decline.streamlit.app/)
+Per-cycle Arps decline curve analysis and project economics for two Cold Lake CSS batteries, built on real Alberta production data (Petrinex). Live dashboard:
+[cold-lake-petro-decline.streamlit.app](https://cold-lake-petro-decline.streamlit.app/)
+Power BI Report: [petro-decline-curve.pbix](https://github.com/jasonou216/Petro-decline-curve/blob/main/powerbi/petro-decline-curve.pbix)
 
 ## Preview
 
