@@ -1,0 +1,5 @@
+battery | year | Petrinex m3/d | reported m3/d | difference
+Mahihkan Battery 02-21 | 2023 | 8,112 | 7,924 | +2.4%
+Mahihkan Battery 02-21 | 2024 | 8,968 | 8,882 | +1.0%
+Nabiye 11-23 | 2023 | 1,950 | 1,950 | +0.0%
+Nabiye 11-23 | 2024 | 4,282 | 4,078 | +5.0%

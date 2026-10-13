@@ -1,0 +1,26 @@
+=== Detection settings (same eligible wells, outage months masked) ===
+                          setting    group  fittable cycles  median length (mo) cycles >= 24 mo high confidence  HC cycles  1->2 wells 1->2 qi_down 1->2 eur_down
+baseline (spacing 4, no gap rule)     both             6287                 8.0              2%             31%       1921         588          71%           62%
+baseline (spacing 4, no gap rule) Mahihkan             5075                 8.0              2%             29%       1480         432          68%           59%
+baseline (spacing 4, no gap rule)   Nabiye             1212                 8.0              1%             36%        441         156          77%           70%
+                        spacing 8     both             3970                12.0              5%             34%       1331         304          78%           74%
+                        spacing 8 Mahihkan             3264                12.0              6%             31%       1027         211          78%           75%
+                        spacing 8   Nabiye              706                12.0              3%             43%        304          93          78%           71%
+                       spacing 12     both             2682                16.0             12%             33%        877         121          86%           86%
+                       spacing 12 Mahihkan             2226                16.0             14%             31%        686          83          87%           88%
+                       spacing 12   Nabiye              456                15.0              5%             42%        191          38          84%           82%
+         steam gap <= 25% of peak     both             2427                 9.0             10%             23%        554          96          62%           59%
+         steam gap <= 25% of peak Mahihkan             1854                 8.0             10%             21%        389          59          58%           54%
+         steam gap <= 25% of peak   Nabiye              573                10.0             12%             29%        165          37          70%           68%
+         steam gap <= 10% of peak     both             1521                 9.0             13%             17%        257          33          61%           52%
+         steam gap <= 10% of peak Mahihkan             1128                 8.0             13%             16%        181          25          60%           48%
+         steam gap <= 10% of peak   Nabiye              393                11.0             15%             19%         76           8          62%           62%
+
+=== 1st -> 2nd high-confidence cycle by well group (committed pipeline output) ===
+                                  group  HC cycles  wells qi_down eur_down
+                              all wells       1921    588     71%      62%
+        excluding sidetracks / redrills       1864    570     70%      62%
+       wells that started in the window         49     11     64%      45%
+wells already producing at window start       1872    577     71%      62%
+                          Mahihkan only       1480    432     68%      59%
+                            Nabiye only        441    156     77%      70%
