@@ -54,8 +54,20 @@ def econ():
     # decline_economics_full.csv never has a row for a low-confidence cycle.
 
 
-def test_dim_well_includes_well_with_zero_fittable_cycles(cycles, fits):
-    dim_well = build_dim_well(cycles, fits)
+@pytest.fixture
+def profiles():
+    return pd.DataFrame(
+        {
+            "Battery": ["B1", "B1"],
+            "FromToID": ["W1", "W2"],
+            "new_in_window": [False, True],
+            "is_redrill": [False, True],
+        }
+    )
+
+
+def test_dim_well_includes_well_with_zero_fittable_cycles(cycles, fits, profiles):
+    dim_well = build_dim_well(cycles, fits, profiles)
 
     assert set(dim_well["WellID"]) == {"W1", "W2"}
     w2 = dim_well[dim_well["WellID"] == "W2"].iloc[0]
@@ -67,8 +79,16 @@ def test_dim_well_includes_well_with_zero_fittable_cycles(cycles, fits):
     assert w1["TotalHighConfidenceCycles"] == 1  # only cycle 1 is high confidence
 
 
-def test_dim_battery_averages_over_every_well_including_zero_cycle_ones(cycles, fits):
-    dim_well = build_dim_well(cycles, fits)
+def test_dim_well_carries_the_profile_flags(cycles, fits, profiles):
+    dim_well = build_dim_well(cycles, fits, profiles).set_index("WellID")
+
+    assert not dim_well.loc["W1", "NewInWindow"]
+    assert dim_well.loc["W2", "NewInWindow"]
+    assert dim_well.loc["W2", "IsRedrill"]
+
+
+def test_dim_battery_averages_over_every_well_including_zero_cycle_ones(cycles, fits, profiles):
+    dim_well = build_dim_well(cycles, fits, profiles)
     dim_battery = build_dim_battery(dim_well)
 
     row = dim_battery.iloc[0]

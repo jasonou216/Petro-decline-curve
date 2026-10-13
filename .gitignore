@@ -25,6 +25,10 @@ data/processed/*
 # scripts in notebooks/; only substantive result artifacts are tracked.
 notebooks/output/*
 !notebooks/output/cycles_full.csv
+!notebooks/output/well_profiles.csv
+!notebooks/output/outage_months.csv
+!notebooks/output/sensitivity_report.txt
+!notebooks/output/filings_validation.txt
 !notebooks/output/decline_fits_full.csv
 !notebooks/output/high_confidence_cycles_with_eur.csv
 !notebooks/output/cycle_degradation_comparison.txt
@@ -32,7 +36,6 @@ notebooks/output/*
 !notebooks/output/well_economics_summary.csv
 !notebooks/output/sensitivity_grid_full.csv
 !notebooks/output/economics_full_report.txt
-!notebooks/output/top_npv_well_nabiye_11-23_ABWI105110806603W400.png
 
 # Secrets
 .env

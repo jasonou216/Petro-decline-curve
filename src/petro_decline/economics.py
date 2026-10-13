@@ -75,7 +75,8 @@ class EconomicAssumptions:
     wcs_differential: Assumption  # $/bbl
     discount_rate: Assumption  # annual, as a fraction (0.10 = 10%/year)
     opex_per_bbl: Assumption  # $/bbl
-    steam_cost_per_cycle: Assumption  # $ per cycle, incurred at the cycle's start (t=0)
+    steam_cost_per_cycle: Assumption  # $ per cycle
+    steam_lead_months: Assumption  # months the steam is paid for ahead of the first production month
 
     @property
     def wcs_price_usd_per_bbl(self) -> float:
@@ -96,6 +97,7 @@ class EconomicAssumptions:
             ("Discount rate", self.discount_rate),
             ("Opex", self.opex_per_bbl),
             ("Steam cost/cycle", self.steam_cost_per_cycle),
+            ("Steam lead (months)", self.steam_lead_months),
         ]:
             print(f"  {label}: {assumption.value} (source: {assumption.source}; last updated: {assumption.last_updated})")
 
@@ -189,6 +191,7 @@ def load_assumptions(config_path: Path = DEFAULT_CONFIG_PATH, eia_api_key: str |
         discount_rate=assumption_from_config("discount_rate"),
         opex_per_bbl=assumption_from_config("opex_per_bbl"),
         steam_cost_per_cycle=assumption_from_config("steam_cost_per_cycle"),
+        steam_lead_months=assumption_from_config("steam_lead_months"),
     )
 
 
@@ -196,18 +199,19 @@ def load_assumptions(config_path: Path = DEFAULT_CONFIG_PATH, eia_api_key: str |
 
 
 def cycle_cash_flows(model: str, qi: float, di: float, b: float, duration_months: int, assumptions: EconomicAssumptions) -> np.ndarray:
-    """Monthly net cash flow for one cycle, t=0..duration_months-1.
+    """Monthly net cash flow for one cycle, starting when the steam is paid for.
 
-    t=0 combines the cycle's first (peak) month of production with the
-    re-stimulation cost — both happen at the moment the well comes back on
-    after steaming, which is exactly what t=0 represents in every fit in
-    this project.
+    Index 0 is the steam cost. Production starts `steam_lead_months` later
+    (injection and soak keep the well off for a month or two before the
+    peak month, which is t=0 in every fit), so NPV and payback are measured
+    from the money going out, not from first oil.
     """
+    lead = int(round(assumptions.steam_lead_months.value))
     t = np.arange(duration_months, dtype=float)
     monthly_oil_bbl = predict(t, model, qi, di, b) * BBL_PER_M3
     net_revenue = monthly_oil_bbl * (assumptions.wcs_price_usd_per_bbl - assumptions.opex_per_bbl.value)
 
-    cash_flows = net_revenue.copy()
+    cash_flows = np.concatenate([np.zeros(lead), net_revenue])
     cash_flows[0] -= assumptions.steam_cost_per_cycle.value
     return cash_flows
 

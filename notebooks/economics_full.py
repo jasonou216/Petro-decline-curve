@@ -14,6 +14,7 @@ Run with: python notebooks/economics_full.py
 
 from __future__ import annotations
 
+import dataclasses
 import sys
 from pathlib import Path
 
@@ -93,6 +94,23 @@ def report_degradation_crosscheck(econ: pd.DataFrame) -> list[str]:
     return lines
 
 
+def report_steam_cost_sensitivity(cycles: pd.DataFrame, assumptions: economics.EconomicAssumptions) -> list[str]:
+    """How much the negative-NPV share depends on the flat steam cost per cycle."""
+    lines = ["", "=== 5. Steam cost per cycle sensitivity (everything else at base case) ==="]
+    lines.append("steam cost | total NPV | negative: all cycles | 1st | 2nd | 3rd+")
+    for cost in [50_000, 100_000, 200_000, 300_000]:
+        steam = dataclasses.replace(assumptions.steam_cost_per_cycle, value=cost, source="sensitivity scenario")
+        econ = economics.compute_cycle_economics(cycles, dataclasses.replace(assumptions, steam_cost_per_cycle=steam))
+        negative = econ["NPV"] < 0
+        position = econ["cycle_number"]
+        shares = [negative[position == 1].mean(), negative[position == 2].mean(), negative[position >= 3].mean()]
+        lines.append(
+            f"${cost:>8,} | ${econ['NPV'].sum():>15,.0f} | {negative.mean():>20.1%} | "
+            + " | ".join(f"{share:.1%}" for share in shares)
+        )
+    return lines
+
+
 def main() -> None:
     assumptions = economics.load_assumptions()
     print()
@@ -116,6 +134,7 @@ def main() -> None:
     sens.to_csv(OUTPUT_DIR / "sensitivity_grid_full.csv", index=False)
 
     report_lines.extend(report_degradation_crosscheck(econ))
+    report_lines.extend(report_steam_cost_sensitivity(hc, assumptions))
 
     report_text = "\n".join(report_lines)
     print(report_text)

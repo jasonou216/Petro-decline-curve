@@ -29,5 +29,10 @@ opex_per_bbl:
 
 steam_cost_per_cycle:
   value: 200000.0
-  source: "illustrative, steam volume data not available in this dataset"
+  source: "illustrative flat cost per cycle, steam volume per cycle isn't in this dataset (see README for the sensitivity)"
   last_updated: "2026-08-24"
+
+steam_lead_months:
+  value: 2
+  source: "Imperial Cold Lake Directive 054 submissions (AER approval 8558): steam injection 4-6 weeks plus a soak of 2 days to several weeks"
+  last_updated: "2026-10-12"

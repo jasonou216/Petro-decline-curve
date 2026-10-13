@@ -1,7 +1,7 @@
 """Star-schema CSV exports for the Power BI companion report.
 
 Reuses the already-computed pipeline outputs (cycles_full.csv,
-decline_fits_full.csv, decline_economics_full.csv) rather than recomputing
+decline_fits_full.csv, decline_economics_full.csv, well_profiles.csv) rather than recomputing
 anything, same convention as economics.py and app.py: this module only
 reshapes what notebooks/detect_cycles_full.py, fit_declines_full.py, and
 economics_full.py already produced.
@@ -35,12 +35,13 @@ BATTERY_OPERATORS = {
 }
 
 
-def build_dim_well(cycles: pd.DataFrame, fits: pd.DataFrame) -> pd.DataFrame:
-    """One row per well that went through cycle detection — the same well
+def build_dim_well(cycles: pd.DataFrame, fits: pd.DataFrame, profiles: pd.DataFrame) -> pd.DataFrame:
+    """One row per well that went through cycle detection, the same well
     universe as the dashboard's "wells analyzed" count (every well in
     cycles_full.csv, not just wells with a fittable or high-confidence
     cycle). A well with zero fittable cycles (e.g. startup-ramp-only) gets
-    0 for both cycle counts rather than being dropped.
+    0 for both cycle counts rather than being dropped. NewInWindow and
+    IsRedrill come from the well profile.
     """
     well_universe = cycles[["Battery", "FromToID"]].drop_duplicates()
 
@@ -53,14 +54,21 @@ def build_dim_well(cycles: pd.DataFrame, fits: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
     )
 
-    dim_well = well_universe.merge(per_well, on=["Battery", "FromToID"], how="left")
+    flags = profiles[["Battery", "FromToID", "new_in_window", "is_redrill"]].rename(
+        columns={"new_in_window": "NewInWindow", "is_redrill": "IsRedrill"}
+    )
+    dim_well = well_universe.merge(per_well, on=["Battery", "FromToID"], how="left").merge(
+        flags, on=["Battery", "FromToID"], how="left"
+    )
     dim_well["TotalCycles"] = dim_well["TotalCycles"].fillna(0).astype(int)
     dim_well["TotalHighConfidenceCycles"] = dim_well["TotalHighConfidenceCycles"].fillna(0).astype(int)
 
     return (
         dim_well.rename(columns={"FromToID": "WellID"})
         .sort_values(["Battery", "WellID"])
-        .reset_index(drop=True)[["WellID", "Battery", "TotalCycles", "TotalHighConfidenceCycles"]]
+        .reset_index(drop=True)[
+            ["WellID", "Battery", "TotalCycles", "TotalHighConfidenceCycles", "NewInWindow", "IsRedrill"]
+        ]
     )
 
 
@@ -120,8 +128,9 @@ def main() -> None:
     cycles = pd.read_csv(NOTEBOOK_OUTPUT_DIR / "cycles_full.csv")
     fits = pd.read_csv(NOTEBOOK_OUTPUT_DIR / "decline_fits_full.csv")
     econ = pd.read_csv(NOTEBOOK_OUTPUT_DIR / "decline_economics_full.csv")
+    profiles = pd.read_csv(NOTEBOOK_OUTPUT_DIR / "well_profiles.csv")
 
-    dim_well = build_dim_well(cycles, fits)
+    dim_well = build_dim_well(cycles, fits, profiles)
     dim_battery = build_dim_battery(dim_well)
     fact_cycle = build_fact_cycle(fits, econ)
 

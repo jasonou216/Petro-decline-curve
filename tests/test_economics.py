@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from petro_decline.economics import Assumption, EconomicAssumptions, irr, npv, payback_months
+from petro_decline.economics import Assumption, EconomicAssumptions, cycle_cash_flows, irr, npv, payback_months
 
 
 def _assumptions(**overrides) -> EconomicAssumptions:
@@ -16,6 +16,7 @@ def _assumptions(**overrides) -> EconomicAssumptions:
         discount_rate=Assumption(0.10, "test", "2026-01-01"),
         opex_per_bbl=Assumption(13.0, "test", "2026-01-01"),
         steam_cost_per_cycle=Assumption(200_000.0, "test", "2026-01-01"),
+        steam_lead_months=Assumption(2, "test", "2026-01-01"),
     )
     defaults.update(overrides)
     return EconomicAssumptions(**defaults)
@@ -81,3 +82,27 @@ def test_payback_months_finds_the_breakeven_period():
 def test_payback_months_nan_if_never_recovered():
     cash_flows = np.array([-100_000.0, 10_000.0, 10_000.0])
     assert np.isnan(payback_months(cash_flows))
+
+
+def test_cycle_cash_flows_pay_for_steam_before_first_production():
+    """With a 2-month lead, index 0 is the steam cost, index 1 is empty and
+    production revenue starts at index 2.
+    """
+    assumptions = _assumptions()
+    flows = cycle_cash_flows("exponential", 300.0, 0.2, 0.0, 6, assumptions)
+
+    assert len(flows) == 6 + 2
+    assert flows[0] == pytest.approx(-200_000.0)
+    assert flows[1] == 0.0
+    assert flows[2] > 0
+
+
+def test_cycle_cash_flows_with_no_lead_match_the_original_layout():
+    """lead = 0 puts the steam cost in the first production month."""
+    assumptions = _assumptions(steam_lead_months=Assumption(0, "test", "2026-01-01"))
+    flows = cycle_cash_flows("exponential", 300.0, 0.2, 0.0, 6, assumptions)
+
+    assert len(flows) == 6
+    net_price = assumptions.wcs_price_usd_per_bbl - assumptions.opex_per_bbl.value
+    first_month_revenue = 300.0 * 6.28981 * net_price
+    assert flows[0] == pytest.approx(first_month_revenue - 200_000.0)

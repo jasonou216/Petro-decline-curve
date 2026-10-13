@@ -26,19 +26,25 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from explore_cycle_detection import load_well_level  # noqa: E402
 from petro_decline import decline  # noqa: E402
 from petro_decline.data import TARGET_BATTERIES, well_oil_series  # noqa: E402
+from petro_decline.outages import find_outage_months, mask_outages  # noqa: E402
 
 OUTPUT_DIR = Path(__file__).resolve().parent / "output"
 
 
 def build_well_series_by_battery(cycles_df: pd.DataFrame) -> dict[str, dict[str, pd.Series]]:
-    """OIL series for every well that appears in cycles_df, grouped by battery."""
+    """OIL series for every well that appears in cycles_df, grouped by battery.
+
+    Plant-outage months are NaN, so they drop out of the fits the same way
+    shut-in months do.
+    """
     well_level_cache = {name: load_well_level(name) for name in TARGET_BATTERIES.values()}
 
     well_series_by_battery: dict[str, dict[str, pd.Series]] = {}
     for battery_name, well_ids in cycles_df.groupby("Battery")["FromToID"].unique().items():
         well_level = well_level_cache[battery_name]
+        outages = find_outage_months(well_level)
         well_series_by_battery[battery_name] = {
-            well_id: well_oil_series(well_level, well_id) for well_id in well_ids
+            well_id: mask_outages(well_oil_series(well_level, well_id), outages) for well_id in well_ids
         }
     return well_series_by_battery
 

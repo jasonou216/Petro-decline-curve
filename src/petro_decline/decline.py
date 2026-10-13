@@ -293,11 +293,10 @@ def fit_all_cycles(cycles_df: pd.DataFrame, well_series_by_battery: dict[str, di
         t_raw = np.arange(len(q_raw), dtype=float)
 
         # data.well_oil_series zero-fills months absent from Petrinex (soak /
-        # shut-in), and those aren't decline observations — a mid-cycle
-        # workover shut-in, for instance, isn't the reservoir declining to
-        # zero, it's downtime. Dropping them keeps the fit shaped by actual
-        # production; t stays the true elapsed month so the remaining
-        # points' timing is still correct, just not contiguous.
+        # shut-in), and outages.mask_outages sets plant-outage months to NaN.
+        # Neither is the reservoir declining, it's downtime, so both are
+        # dropped (NaN > 0 is False). t stays the true elapsed month so the
+        # remaining points' timing is still correct, just not contiguous.
         producing = q_raw > 0
         t, q = t_raw[producing], q_raw[producing]
 

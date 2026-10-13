@@ -90,7 +90,10 @@ GLOSSARY = {
         "full": "One full round of steam injection followed by production, starting at a fresh production "
         "spike right after steaming and ending when the well is re-steamed again (or the data runs out). "
         "Detected from the well's own production history by finding each new spike that rises enough "
-        "above its recent low point to count as a real re-stimulation rather than noise.",
+        "above its recent low point to count as a real re-stimulation rather than noise. Cycle numbers "
+        "count from the start of the data (January 2022), not from the well's first steam job, so "
+        "\"cycle 1\" on a well that was already producing in 2022 is usually a mid or late cycle of its life. "
+        "Only wells that started inside the data window have lifetime cycle numbers.",
     },
     "Startup ramp": {
         "short": "A well's first stretch of production, before its first re-stimulation.",
@@ -327,6 +330,11 @@ def load_cycles() -> pd.DataFrame:
     df["start"] = pd.to_datetime(df["start"])
     df["end"] = pd.to_datetime(df["end"])
     return df
+
+
+@st.cache_data
+def load_well_profiles() -> pd.DataFrame:
+    return pd.read_csv(OUTPUT_DIR / "well_profiles.csv")
 
 
 @st.cache_data
@@ -592,6 +600,13 @@ def render_battery_overview() -> None:
     render_intro()
     section_header("Battery overview")
     st.caption("Select a well from the sidebar to see its production history and per-cycle detail.")
+    excluded = load_well_profiles()["excluded_reason"].fillna("").replace("", pd.NA).dropna().value_counts()
+    if len(excluded):
+        st.caption(
+            "Not analyzed: "
+            + ", ".join(f"{count} wells ({reason})" for reason, count in excluded.items())
+            + ". Continuous-process wells are SA-SAGD-like producers that don't cycle."
+        )
 
     col1, col2 = st.columns(2)
     with col1:

@@ -45,6 +45,7 @@ def test_cycle_eur_matches_economics_cash_flow_volume():
         discount_rate=Assumption(0.10, "test", "2026-01-01"),
         opex_per_bbl=Assumption(13.0, "test", "2026-01-01"),
         steam_cost_per_cycle=Assumption(200_000.0, "test", "2026-01-01"),
+        steam_lead_months=Assumption(2, "test", "2026-01-01"),
     )
 
     eur = cycle_eur("hyperbolic", qi, di, b, duration)
@@ -54,8 +55,7 @@ def test_cycle_eur_matches_economics_cash_flow_volume():
     from petro_decline.economics import BBL_PER_M3
 
     cash_flows = cycle_cash_flows("hyperbolic", qi, di, b, duration, assumptions)
-    net_revenue = cash_flows.copy()
-    net_revenue[0] += assumptions.steam_cost_per_cycle.value  # undo the t=0 steam deduction
+    net_revenue = cash_flows[int(assumptions.steam_lead_months.value) :]  # production starts after the steam lead
     monthly_oil_bbl = net_revenue / (assumptions.wcs_price_usd_per_bbl - assumptions.opex_per_bbl.value)
     implied_eur = float(np.sum(monthly_oil_bbl / BBL_PER_M3))
 
